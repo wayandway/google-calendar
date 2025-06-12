@@ -1,7 +1,10 @@
 'use client';
 
-import { Plus, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+
+import { Plus, ChevronDown } from 'lucide-react';
+
+import { MiniCalendar } from '../mini-calendar';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,23 +19,15 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="p-4">
+      <div className="p-2">
         <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:shadow-md border border-neutral-gray-200 transition-shadow">
           <Plus className="w-5 h-5" />
           <span>만들기</span>
         </button>
       </div>
 
-      <div className="p-4">
-        <div className="mb-4">
-          <div className="text-center">
-            <div className="text-xl font-medium">{selectedDate.getFullYear()}년</div>
-            <div className="text-2xl font-bold">{selectedDate.getMonth() + 1}월</div>
-          </div>
-        </div>
-
-        {/* 미니 캘린더 */}
-        <div className="bg-neutral-gray-100 h-48 rounded-lg mb-4"></div>
+      <div className="px-2 py-4">
+        <MiniCalendar selected={selectedDate} onSelect={(date) => date && setSelectedDate(date)} />
       </div>
 
       <nav className="flex-1 p-2">

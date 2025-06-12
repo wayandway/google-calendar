@@ -2936,6 +2936,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.2.0"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^16.1.0"
+    lucide-react: "npm:^0.514.0"
     next: "npm:15.3.3"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
@@ -3806,6 +3807,15 @@ __metadata:
   bin:
     loose-envify: cli.js
   checksum: 10c0/655d110220983c1a4b9c0c679a2e8016d4b67f6e9c7b5435ff5979ecdb20d0813f4dec0a08674fcbdd4846a3f07edbb50a36811fd37930b94aaa0d9daceb017e
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.514.0":
+  version: 0.514.0
+  resolution: "lucide-react@npm:0.514.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/83d781e5036b53a1b0f3be05d43c80675c8d65ff59901f7db1868ba36d3fa159cb459f4c3974781a4105062a1aa7df8a57ac70192a455b95afec7281ad751ffb
   languageName: node
   linkType: hard
 

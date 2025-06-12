@@ -38,6 +38,22 @@ export default [
           },
         },
       ],
+      '@next/next/no-html-link-for-pages': 'error',
+      '@next/next/no-img-element': 'error',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-undef': ['error', { typeof: true }],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'window',
+          message: 'Use "use client" directive for client-side code.',
+        },
+      ],
+    },
+    settings: {
+      next: {
+        rootDir: '.',
+      },
     },
   },
 ];

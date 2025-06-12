@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { Metadata } from 'next';
 
-import { Providers } from '@/components/providers/Providers';
+import RootLayout from '@/components/layout/RootLayout';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,11 +14,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <RootLayout>{children}</RootLayout>
       </body>
     </html>
   );

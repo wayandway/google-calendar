@@ -1,5 +1,11 @@
-import { redirect } from 'next/navigation';
+import React from 'react';
 
-export default function Home() {
-  redirect('/month');
+import MainCalendar from '@/components/main-calendar/MainCalendar';
+
+export default function CalendarPage() {
+  return (
+    <div className="h-full">
+      <MainCalendar />
+    </div>
+  );
 }

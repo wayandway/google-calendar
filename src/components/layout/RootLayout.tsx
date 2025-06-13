@@ -1,28 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
+import { RootState } from '@/store';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
-import Header from '@/components/layout/Header';
-import { MiniCalendar } from '@/components/mini-calendar';
-import { store, persistor } from '@/store';
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: RootLayoutProps) {
+  const { isSidebarOpen } = useSelector((state: RootState) => state.layout);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <div className="flex flex-col h-screen">
-          <Header />
-          <div className="flex flex-1 overflow-hidden">
-            <aside className="w-64 p-4 border-r bg-white">
-              <MiniCalendar />
-            </aside>
-            <main className="flex-1">{children}</main>
-          </div>
-        </div>
-      </PersistGate>
-    </Provider>
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

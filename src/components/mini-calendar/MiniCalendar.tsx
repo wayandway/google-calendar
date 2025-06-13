@@ -77,7 +77,6 @@ export default function MiniCalendar() {
       dispatch(moveToNextMonth());
     }
     dispatch(setSelectedDate(targetDate.toISOString()));
-    dispatch(setView('week')); // 주별 뷰로 전환
   };
 
   const isToday = (day: number, isCurrentMonth: boolean, isPrevMonth: boolean) => {

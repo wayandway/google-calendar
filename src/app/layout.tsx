@@ -1,9 +1,10 @@
 import React from 'react';
-
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
 
+import ReduxProvider from '@/components/providers/ReduxProvider';
 import RootLayout from '@/components/layout/RootLayout';
+
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -20,7 +21,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <RootLayout>{children}</RootLayout>
+        <ReduxProvider>
+          <RootLayout>{children}</RootLayout>
+        </ReduxProvider>
       </body>
     </html>
   );

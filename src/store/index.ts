@@ -12,22 +12,25 @@ import {
 import storage from 'redux-persist/lib/storage';
 
 import calendarReducer from './features/calendarSlice';
+import layoutReducer from './features/layoutSlice';
 
-const persistConfig = {
+const calendarPersistConfig = {
   key: 'calendar',
   storage,
+  whitelist: ['view'],
 };
 
-const persistedCalendarReducer = persistReducer(persistConfig, calendarReducer);
+const persistedCalendarReducer = persistReducer(calendarPersistConfig, calendarReducer);
 
 export const store = configureStore({
   reducer: {
     calendar: persistedCalendarReducer,
+    layout: layoutReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
     }),
 });

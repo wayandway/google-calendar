@@ -12,7 +12,7 @@ const today = new Date();
 const initialState: CalendarState = {
   currentDate: today.toISOString(),
   selectedDate: today.toISOString(),
-  view: 'month',
+  view: 'week',
 };
 
 const calendarSlice = createSlice({

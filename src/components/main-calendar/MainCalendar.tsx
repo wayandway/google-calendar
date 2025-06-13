@@ -38,14 +38,6 @@ export default function MainCalendar({
 
   return (
     <div className="flex flex-col h-full">
-      <CalendarHeader
-        currentDate={new Date(currentDate)}
-        view={view}
-        onPrevMonth={() => dispatch(moveToPrevMonth())}
-        onNextMonth={() => dispatch(moveToNextMonth())}
-        onToday={() => dispatch(moveToToday())}
-        onViewChange={handleViewChange}
-      />
       <div className="flex-1 overflow-auto">
         {view === 'month' ? (
           <MonthView

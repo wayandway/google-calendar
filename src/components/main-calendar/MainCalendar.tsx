@@ -25,7 +25,7 @@ export default function MainCalendar({
   defaultView = 'month',
 }: MainCalendarProps) {
   const dispatch = useDispatch();
-  const { view, currentDate } = useSelector((state: RootState) => state.calendar);
+  const { currentDate, view, selectedDate } = useSelector((state: RootState) => state.calendar);
 
   const handleViewChange = (newView: CalendarView) => {
     dispatch(setView(newView));

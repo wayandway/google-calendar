@@ -10,14 +10,49 @@ export default function WeekView({
   onEventClick,
   onDateClick,
 }: WeekViewProps) {
-  // currentDate를 기준으로 해당 주의 시작일(일요일)을 계산
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // 0: 일요일
+
+  const renderTimeSlots = () => {
+    const timeSlots = [];
+    for (let hour = 0; hour < 24; hour++) {
+      timeSlots.push(
+        <div key={hour} className="flex h-16 border-b">
+          <div className="w-20 p-2 text-sm text-gray-500 border-r">
+            {format(new Date().setHours(hour, 0, 0, 0), 'a h시', { locale: ko })}
+          </div>
+          <div className="flex-1 grid grid-cols-7">
+            {Array.from({ length: 7 }).map((_, dayIndex) => {
+              const day = addDays(weekStart, dayIndex);
+              const dayEvents = events.filter((event) => {
+                const eventDate = new Date(event.start);
+                return isSameDay(eventDate, day) && eventDate.getHours() === hour;
+              });
+
+              return (
+                <div key={dayIndex} className="border-r last:border-r-0 relative">
+                  {dayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="absolute left-0 right-0 mx-1 p-1 text-xs bg-blue-100 rounded cursor-pointer"
+                      onClick={() => onEventClick(event)}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>,
+      );
+    }
+    return timeSlots;
+  };
 
   const renderWeekDays = () => {
     const days = [];
     for (let i = 0; i < 7; i++) {
       const day = addDays(weekStart, i);
-      const dayEvents = events.filter((event) => isSameDay(new Date(event.start), day));
       const isToday = isSameDay(day, new Date());
 
       days.push(
@@ -32,17 +67,6 @@ export default function WeekView({
               {format(day, 'd')}
             </div>
           </div>
-          <div className="p-2">
-            {dayEvents.map((event) => (
-              <div
-                key={event.id}
-                className="mb-1 p-1 text-sm bg-blue-100 rounded cursor-pointer"
-                onClick={() => onEventClick(event)}
-              >
-                {event.title}
-              </div>
-            ))}
-          </div>
         </div>,
       );
     }
@@ -51,7 +75,11 @@ export default function WeekView({
 
   return (
     <div className="h-full">
-      <div className="flex h-full">{renderWeekDays()}</div>
+      <div className="flex border-b">
+        <div className="w-20 border-r" />
+        {renderWeekDays()}
+      </div>
+      <div className="overflow-y-auto">{renderTimeSlots()}</div>
     </div>
   );
 }

@@ -1,11 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { CalendarView } from '@/types/calendar';
-
-interface CalendarState {
+export interface CalendarState {
   currentDate: string;
   selectedDate: string;
-  view: CalendarView;
+  view: 'month' | 'week';
 }
 
 const today = new Date();
@@ -19,22 +17,25 @@ const calendarSlice = createSlice({
   name: 'calendar',
   initialState,
   reducers: {
-    setView(state, action: PayloadAction<CalendarView>) {
-      state.view = action.payload;
+    setCurrentDate(state, action: PayloadAction<string>) {
+      state.currentDate = action.payload;
     },
     setSelectedDate(state, action: PayloadAction<string>) {
       state.selectedDate = action.payload;
       state.currentDate = action.payload;
     },
+    setView(state, action: PayloadAction<'month' | 'week'>) {
+      state.view = action.payload;
+    },
     moveToPrevMonth(state) {
-      const currentDate = new Date(state.currentDate);
-      currentDate.setMonth(currentDate.getMonth() - 1);
-      state.currentDate = currentDate.toISOString();
+      const date = new Date(state.currentDate);
+      date.setMonth(date.getMonth() - 1);
+      state.currentDate = date.toISOString();
     },
     moveToNextMonth(state) {
-      const currentDate = new Date(state.currentDate);
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      state.currentDate = currentDate.toISOString();
+      const date = new Date(state.currentDate);
+      date.setMonth(date.getMonth() + 1);
+      state.currentDate = date.toISOString();
     },
     moveToToday() {
       const today = new Date();
@@ -47,7 +48,13 @@ const calendarSlice = createSlice({
   },
 });
 
-export const { setView, setSelectedDate, moveToPrevMonth, moveToNextMonth, moveToToday } =
-  calendarSlice.actions;
+export const {
+  setCurrentDate,
+  setSelectedDate,
+  setView,
+  moveToPrevMonth,
+  moveToNextMonth,
+  moveToToday,
+} = calendarSlice.actions;
 
 export default calendarSlice.reducer;

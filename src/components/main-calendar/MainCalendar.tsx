@@ -33,29 +33,17 @@ export default function MainCalendar({
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       e.preventDefault();
-      if (e.deltaY < 0) {
-        // 스크롤 위로 (이전)
-        if (view === 'month') {
+      if (view === 'month') {
+        if (e.deltaY < 0) {
+          // 스크롤 위로 (이전 달)
           dispatch(moveToPrevMonth());
         } else {
-          // 주별 뷰에서는 7일씩 이동
-          const newDate = new Date(currentDate);
-          newDate.setDate(newDate.getDate() - 7);
-          dispatch(setSelectedDate(newDate.toISOString()));
-        }
-      } else {
-        // 스크롤 아래로 (다음)
-        if (view === 'month') {
+          // 스크롤 아래로 (다음 달)
           dispatch(moveToNextMonth());
-        } else {
-          // 주별 뷰에서는 7일씩 이동
-          const newDate = new Date(currentDate);
-          newDate.setDate(newDate.getDate() + 7);
-          dispatch(setSelectedDate(newDate.toISOString()));
         }
       }
     },
-    [dispatch, view, currentDate],
+    [dispatch, view],
   );
 
   return (

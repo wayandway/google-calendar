@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import CalendarHeader from './CalendarHeader';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 
@@ -25,19 +24,43 @@ export default function MainCalendar({
   defaultView = 'month',
 }: MainCalendarProps) {
   const dispatch = useDispatch();
-  const { currentDate, view, selectedDate } = useSelector((state: RootState) => state.calendar);
-
-  const handleViewChange = (newView: CalendarView) => {
-    dispatch(setView(newView));
-  };
+  const { currentDate, view } = useSelector((state: RootState) => state.calendar);
 
   const handleDateClick = (date: Date) => {
     onDateClick?.(date);
   };
 
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        // 스크롤 위로 (이전)
+        if (view === 'month') {
+          dispatch(moveToPrevMonth());
+        } else {
+          // 주별 뷰에서는 7일씩 이동
+          const newDate = new Date(currentDate);
+          newDate.setDate(newDate.getDate() - 7);
+          dispatch(setSelectedDate(newDate.toISOString()));
+        }
+      } else {
+        // 스크롤 아래로 (다음)
+        if (view === 'month') {
+          dispatch(moveToNextMonth());
+        } else {
+          // 주별 뷰에서는 7일씩 이동
+          const newDate = new Date(currentDate);
+          newDate.setDate(newDate.getDate() + 7);
+          dispatch(setSelectedDate(newDate.toISOString()));
+        }
+      }
+    },
+    [dispatch, view, currentDate],
+  );
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" onWheel={handleWheel}>
         {view === 'month' ? (
           <MonthView
             currentDate={new Date(currentDate)}

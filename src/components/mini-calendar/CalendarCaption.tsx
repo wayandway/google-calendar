@@ -1,65 +1,33 @@
+'use client';
+
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import React from 'react';
 
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 interface CalendarCaptionProps {
-  displayMonth: Date;
-  onPreviousMonth: () => void;
+  currentDate: Date;
+  onPrevMonth: () => void;
   onNextMonth: () => void;
 }
 
 export default function CalendarCaption({
-  displayMonth,
-  onPreviousMonth,
+  currentDate,
+  onPrevMonth,
   onNextMonth,
-}: CalendarCaptionProps): React.ReactElement {
+}: CalendarCaptionProps) {
   return (
-    <div className="flex items-center justify-between px-2 py-1 mb-2">
-      <button
-        type="button"
-        onClick={onPreviousMonth}
-        className="relative rounded-full p-1 cursor-pointer hover:bg-neutral-gray-200/80 transition-colors"
-        aria-label="이전 달"
-      >
-        <svg
-          width="20"
-          height="20"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="text-neutral-gray-600"
-        >
-          <path
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      <span className="font-semibold text-base">
-        {displayMonth.getFullYear()} {displayMonth.getMonth() + 1}월
-      </span>
-      <button
-        type="button"
-        onClick={onNextMonth}
-        className="relative rounded-full p-1 cursor-pointer hover:bg-neutral-gray-200/80 transition-colors"
-        aria-label="다음 달"
-      >
-        <svg
-          width="20"
-          height="20"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="text-neutral-gray-600"
-        >
-          <path
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
+    <div className="flex items-center justify-between mb-4">
+      <div className="text-sm font-medium">{format(currentDate, 'yyyy년 M월', { locale: ko })}</div>
+      <div className="flex items-center gap-1">
+        <button onClick={onPrevMonth} className="p-1 hover:bg-gray-100 rounded" type="button">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button onClick={onNextMonth} className="p-1 hover:bg-gray-100 rounded" type="button">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,68 +1,65 @@
-import React, { useState } from 'react';
+'use client';
+
+import React from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 import CalendarHeader from './CalendarHeader';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 
-import { CalendarView, MainCalendarProps, CalendarEvent } from '@/types/calendar';
+import { RootState } from '@/store';
+import {
+  setView,
+  setSelectedDate,
+  moveToPrevMonth,
+  moveToNextMonth,
+  moveToToday,
+} from '@/store/features/calendarSlice';
+import { CalendarView, MainCalendarProps } from '@/types/calendar';
 
 export default function MainCalendar({
   events = [],
-  onEventClick,
+  onEventClick = () => {},
   onDateClick,
   defaultView = 'month',
 }: MainCalendarProps) {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<CalendarView>(defaultView);
-
-  const handlePrevMonth = () => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(prev.getMonth() - 1);
-      return newDate;
-    });
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(prev.getMonth() + 1);
-      return newDate;
-    });
-  };
-
-  const handleToday = () => {
-    setCurrentDate(new Date());
-  };
+  const dispatch = useDispatch();
+  const { view, currentDate } = useSelector((state: RootState) => state.calendar);
 
   const handleViewChange = (newView: CalendarView) => {
-    setView(newView);
+    dispatch(setView(newView));
+  };
+
+  const handleDateClick = (date: Date) => {
+    dispatch(setSelectedDate(date.toISOString()));
+    onDateClick?.(date);
   };
 
   return (
     <div className="flex flex-col h-full">
       <CalendarHeader
-        currentDate={currentDate}
+        currentDate={new Date(currentDate)}
         view={view}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
-        onToday={handleToday}
+        onPrevMonth={() => dispatch(moveToPrevMonth())}
+        onNextMonth={() => dispatch(moveToNextMonth())}
+        onToday={() => dispatch(moveToToday())}
         onViewChange={handleViewChange}
       />
       <div className="flex-1 overflow-auto">
         {view === 'month' ? (
           <MonthView
-            currentDate={currentDate}
+            currentDate={new Date(currentDate)}
             events={events}
             onEventClick={onEventClick}
-            onDateClick={onDateClick}
+            onDateClick={handleDateClick}
           />
         ) : (
           <WeekView
-            currentDate={currentDate}
+            currentDate={new Date(currentDate)}
             events={events}
             onEventClick={onEventClick}
-            onDateClick={onDateClick}
+            onDateClick={handleDateClick}
           />
         )}
       </div>

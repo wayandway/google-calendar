@@ -1,23 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import React from 'react';
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
+import { Provider } from 'react-redux';
 
-export default function RootLayout({ children }: RootLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+import Header from '@/components/layout/Header';
+import { MiniCalendar } from '@/components/mini-calendar';
+import { store } from '@/store';
 
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-screen flex flex-col">
-      <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
-      <div className="flex-1 flex overflow-hidden">
-        <Sidebar isOpen={isSidebarOpen} />
-        <main className="flex-1 overflow-auto bg-neutral-gray-100">{children}</main>
+    <Provider store={store}>
+      <div className="flex flex-col h-screen">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          <aside className="w-64 p-4 border-r bg-white">
+            <MiniCalendar />
+          </aside>
+          <main className="flex-1">{children}</main>
+        </div>
       </div>
-    </div>
+    </Provider>
   );
 }

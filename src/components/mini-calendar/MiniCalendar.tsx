@@ -1,6 +1,7 @@
 'use client';
 
 import { getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, setDate } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +9,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import CalendarCaption from './CalendarCaption';
 
 import { RootState } from '@/store';
-import { setSelectedDate, moveToPrevMonth, moveToNextMonth } from '@/store/features/calendarSlice';
+import {
+  setSelectedDate,
+  moveToPrevMonth,
+  moveToNextMonth,
+  moveToToday,
+} from '@/store/features/calendarSlice';
 
 export default function MiniCalendar() {
   const dispatch = useDispatch();

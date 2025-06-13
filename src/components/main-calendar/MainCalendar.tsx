@@ -32,7 +32,6 @@ export default function MainCalendar({
   };
 
   const handleDateClick = (date: Date) => {
-    dispatch(setSelectedDate(date.toISOString()));
     onDateClick?.(date);
   };
 

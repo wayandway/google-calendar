@@ -15,6 +15,20 @@ export interface CalendarEvent {
   };
 }
 
+export interface WeekViewProps {
+  currentDate: Date;
+  events: CalendarEvent[];
+  onEventClick: (event: CalendarEvent) => void;
+  onDateClick: (date: Date) => void;
+}
+
+export interface MonthViewProps {
+  currentDate: Date;
+  events: CalendarEvent[];
+  onEventClick: (event: CalendarEvent) => void;
+  onDateClick: (date: Date) => void;
+}
+
 export interface MainCalendarProps {
   events?: CalendarEvent[];
   onEventClick?: (event: CalendarEvent) => void;

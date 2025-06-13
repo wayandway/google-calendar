@@ -24,6 +24,7 @@ const calendarSlice = createSlice({
     },
     setSelectedDate(state, action: PayloadAction<string>) {
       state.selectedDate = action.payload;
+      state.currentDate = action.payload;
     },
     moveToPrevMonth(state) {
       const currentDate = new Date(state.currentDate);

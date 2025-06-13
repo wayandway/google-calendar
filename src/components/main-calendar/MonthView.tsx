@@ -1,13 +1,15 @@
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+} from 'date-fns';
+import { ko } from 'date-fns/locale';
 import React from 'react';
 
-import { CalendarEvent } from '@/types/calendar';
-
-interface MonthViewProps {
-  currentDate: Date;
-  events: CalendarEvent[];
-  onEventClick: (event: CalendarEvent) => void;
-  onDateClick: (date: Date) => void;
-}
+import { MonthViewProps } from '@/types/calendar';
 
 export default function MonthView({
   currentDate,
@@ -15,72 +17,43 @@ export default function MonthView({
   onEventClick,
   onDateClick,
 }: MonthViewProps) {
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    return new Date(year, month + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    return new Date(year, month, 1).getDay();
-  };
-
-  const getEventsForDate = (date: Date) => {
-    return events.filter((event) => {
-      const eventDate = new Date(event.start);
-      return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      );
-    });
-  };
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
+  const today = new Date();
 
   const renderCalendarDays = () => {
-    const daysInMonth = getDaysInMonth(currentDate);
-    const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
+    const startDate = new Date(monthStart);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
 
-    // 이전 달의 날짜들
-    const prevMonthDays = getDaysInMonth(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1),
-    );
-    for (let i = firstDay - 1; i >= 0; i--) {
-      const date = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() - 1,
-        prevMonthDays - i,
-      );
-      days.push(
-        <div key={`prev-${i}`} className="p-2 min-h-[100px] border border-gray-200 bg-gray-50">
-          <span className="text-gray-400">{prevMonthDays - i}</span>
-        </div>,
-      );
-    }
-
-    // 현재 달의 날짜들
-    for (let i = 1; i <= daysInMonth; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-      const isToday = new Date().toDateString() === date.toDateString();
-      const dayEvents = getEventsForDate(date);
+    for (let i = 0; i < 42; i++) {
+      const currentDate = new Date(startDate);
+      const isCurrentMonth = isSameMonth(currentDate, monthStart);
+      const isToday = isSameDay(currentDate, today);
+      const dayEvents = events.filter((event) => isSameDay(new Date(event.start), currentDate));
 
       days.push(
         <div
           key={i}
-          className={`p-2 min-h-[100px] border border-gray-200 ${isToday ? 'bg-blue-50' : ''}`}
-          onClick={() => onDateClick(date)}
+          onClick={() => onDateClick(currentDate)}
+          className={`flex-1 min-h-[100px] p-2 border-r border-b ${
+            !isCurrentMonth ? 'bg-gray-50' : ''
+          }`}
         >
-          <div className="flex justify-between items-center mb-1">
-            <span className={`${isToday ? 'font-bold text-blue-600' : ''}`}>{i}</span>
+          <div className="text-right">
+            <div
+              className={`inline-flex items-center justify-center w-8 h-8 rounded-full ${
+                isToday ? 'bg-blue-500 text-white' : ''
+              }`}
+            >
+              {format(currentDate, 'd')}
+            </div>
           </div>
-          <div className="space-y-1">
+          <div className="mt-1">
             {dayEvents.map((event) => (
               <div
                 key={event.id}
-                className="p-1 text-xs rounded truncate cursor-pointer"
-                style={{ backgroundColor: event.color || '#e2e8f0' }}
+                className="mb-1 p-1 text-sm bg-blue-100 rounded cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   onEventClick(event);
@@ -92,29 +65,21 @@ export default function MonthView({
           </div>
         </div>,
       );
+      startDate.setDate(startDate.getDate() + 1);
     }
-
-    // 다음 달의 날짜들
-    const remainingDays = 42 - (firstDay + daysInMonth); // 6주 * 7일 = 42
-    for (let i = 1; i <= remainingDays; i++) {
-      days.push(
-        <div key={`next-${i}`} className="p-2 min-h-[100px] border border-gray-200 bg-gray-50">
-          <span className="text-gray-400">{i}</span>
-        </div>,
-      );
-    }
-
     return days;
   };
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-gray-200">
-      {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-        <div key={day} className="p-2 text-center font-semibold bg-white border-b">
-          {day}
-        </div>
-      ))}
-      {renderCalendarDays()}
+    <div className="h-full">
+      <div className="grid grid-cols-7 gap-px bg-gray-200">
+        {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
+          <div key={day} className="p-2 text-center font-medium bg-white">
+            {day}
+          </div>
+        ))}
+        {renderCalendarDays()}
+      </div>
     </div>
   );
 }

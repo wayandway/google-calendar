@@ -1,6 +1,16 @@
 'use client';
 
-import { getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, setDate } from 'date-fns';
+import {
+  getDaysInMonth,
+  startOfMonth,
+  getDay,
+  addMonths,
+  subMonths,
+  setDate,
+  format,
+  isSameDay,
+  isSameMonth,
+} from 'date-fns';
 import { ko } from 'date-fns/locale';
 import React from 'react';
 
@@ -14,14 +24,16 @@ import {
   moveToPrevMonth,
   moveToNextMonth,
   moveToToday,
+  setView,
 } from '@/store/features/calendarSlice';
 
 export default function MiniCalendar() {
   const dispatch = useDispatch();
   const { currentDate, selectedDate } = useSelector((state: RootState) => state.calendar);
-
   const date = new Date(currentDate);
   const selected = new Date(selectedDate);
+  const today = new Date();
+
   const daysInMonth = getDaysInMonth(date);
   const firstDayOfMonth = getDay(startOfMonth(date));
   const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
@@ -58,13 +70,14 @@ export default function MiniCalendar() {
     if (isCurrentMonth) {
       targetDate = setDate(date, day);
     } else if (isPrevMonth) {
-      targetDate = setDate(prevMonth, day);
+      targetDate = setDate(new Date(date.getFullYear(), date.getMonth() - 1), day);
       dispatch(moveToPrevMonth());
     } else {
-      targetDate = setDate(nextMonth, day);
+      targetDate = setDate(new Date(date.getFullYear(), date.getMonth() + 1), day);
       dispatch(moveToNextMonth());
     }
     dispatch(setSelectedDate(targetDate.toISOString()));
+    dispatch(setView('week')); // 주별 뷰로 전환
   };
 
   const isToday = (day: number, isCurrentMonth: boolean, isPrevMonth: boolean) => {
@@ -100,6 +113,82 @@ export default function MiniCalendar() {
     );
   };
 
+  const renderCalendarDays = () => {
+    const days = [];
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const prevMonthLastDay = new Date(date.getFullYear(), date.getMonth(), 0);
+    const nextMonthFirstDay = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+
+    // 이전 달의 날짜들
+    for (let i = firstDay.getDay(); i > 0; i--) {
+      const day = prevMonthLastDay.getDate() - i + 1;
+      const prevMonthDate = new Date(date.getFullYear(), date.getMonth() - 1, day);
+      const isToday = isSameDay(prevMonthDate, today);
+      days.push(
+        <button
+          key={`prev-${day}`}
+          onClick={() => handleDateClick(day, false, true)}
+          className="text-gray-400 hover:bg-gray-100 rounded"
+        >
+          <div
+            className={`flex items-center justify-center w-6 h-6 mx-auto rounded-full ${
+              isToday ? 'bg-blue-500 text-white' : ''
+            }`}
+          >
+            {day}
+          </div>
+        </button>,
+      );
+    }
+
+    // 현재 달의 날짜들
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      const currentDate = new Date(date.getFullYear(), date.getMonth(), i);
+      const isSelected = isSameDay(currentDate, selected);
+      const isToday = isSameDay(currentDate, today);
+      days.push(
+        <button
+          key={i}
+          onClick={() => handleDateClick(i, true, false)}
+          className={`hover:bg-gray-100 rounded ${isSelected ? 'bg-sky-100' : ''}`}
+        >
+          <div
+            className={`flex items-center justify-center w-6 h-6 mx-auto rounded-full ${
+              isToday ? 'bg-blue-500 text-white' : ''
+            }`}
+          >
+            {i}
+          </div>
+        </button>,
+      );
+    }
+
+    // 다음 달의 날짜들
+    const remainingDays = 42 - days.length;
+    for (let i = 1; i <= remainingDays; i++) {
+      const nextMonthDate = new Date(date.getFullYear(), date.getMonth() + 1, i);
+      const isToday = isSameDay(nextMonthDate, today);
+      days.push(
+        <button
+          key={`next-${i}`}
+          onClick={() => handleDateClick(i, false, false)}
+          className="text-gray-400 hover:bg-gray-100 rounded"
+        >
+          <div
+            className={`flex items-center justify-center w-6 h-6 mx-auto rounded-full ${
+              isToday ? 'bg-blue-500 text-white' : ''
+            }`}
+          >
+            {i}
+          </div>
+        </button>,
+      );
+    }
+
+    return days;
+  };
+
   return (
     <div className="w-full">
       <CalendarCaption
@@ -118,30 +207,7 @@ export default function MiniCalendar() {
             {day}
           </div>
         ))}
-        {allDays.map(({ day, isCurrentMonth, isPrevMonth }) => (
-          <button
-            key={`${isPrevMonth ? 'prev' : isCurrentMonth ? 'current' : 'next'}-${day}`}
-            type="button"
-            onClick={() => handleDateClick(day, isCurrentMonth, isPrevMonth)}
-            className={`py-1 rounded-full hover:bg-gray-100 ${
-              isToday(day, isCurrentMonth, isPrevMonth)
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : isSelected(day, isCurrentMonth, isPrevMonth)
-                  ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                  : !isCurrentMonth
-                    ? 'text-gray-400'
-                    : ''
-            } ${
-              day === 1 && firstDayOfMonth === 0 && isCurrentMonth
-                ? 'text-red-500'
-                : day === 1 && firstDayOfMonth === 6 && isCurrentMonth
-                  ? 'text-blue-500'
-                  : ''
-            }`}
-          >
-            {day}
-          </button>
-        ))}
+        {renderCalendarDays()}
       </div>
     </div>
   );

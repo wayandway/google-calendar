@@ -2,30 +2,30 @@ import { format } from 'date-fns';
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { CalendarState, ViewMode } from '@/types/calendar';
+import { CalendarState, CalendarView } from '@/types/calendar';
 
 const initialState: CalendarState = {
-  currentDate: format(new Date(), 'yyyy-MM-dd'),
-  viewMode: 'week',
+  currentDate: new Date(),
+  view: 'month',
   selectedDate: null,
 };
 
-export const calendarSlice = createSlice({
+const calendarSlice = createSlice({
   name: 'calendar',
   initialState,
   reducers: {
-    setCurrentDate: (state, action: PayloadAction<string>) => {
+    setCurrentDate: (state, action: PayloadAction<Date>) => {
       state.currentDate = action.payload;
     },
-    setViewMode: (state, action: PayloadAction<ViewMode>) => {
-      state.viewMode = action.payload;
+    setView: (state, action: PayloadAction<CalendarView>) => {
+      state.view = action.payload;
     },
-    setSelectedDate: (state, action: PayloadAction<string | null>) => {
+    setSelectedDate: (state, action: PayloadAction<Date | null>) => {
       state.selectedDate = action.payload;
     },
   },
 });
 
-export const { setCurrentDate, setViewMode, setSelectedDate } = calendarSlice.actions;
+export const { setCurrentDate, setView, setSelectedDate } = calendarSlice.actions;
 
 export default calendarSlice.reducer;

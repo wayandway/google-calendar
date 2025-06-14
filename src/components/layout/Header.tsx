@@ -23,13 +23,21 @@ export default function Header() {
 
   const handlePrevMonth = () => {
     const newDate = new Date(date);
-    newDate.setMonth(date.getMonth() - 1);
+    if (view === 'week') {
+      newDate.setDate(date.getDate() - 7);
+    } else {
+      newDate.setMonth(date.getMonth() - 1);
+    }
     dispatch(setCurrentDate(newDate.toISOString()));
   };
 
   const handleNextMonth = () => {
     const newDate = new Date(date);
-    newDate.setMonth(date.getMonth() + 1);
+    if (view === 'week') {
+      newDate.setDate(date.getDate() + 7);
+    } else {
+      newDate.setMonth(date.getMonth() + 1);
+    }
     dispatch(setCurrentDate(newDate.toISOString()));
   };
 

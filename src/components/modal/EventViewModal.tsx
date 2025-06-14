@@ -17,27 +17,27 @@ interface EventViewModalProps {
 
 export default function EventViewModal({ event, onClose, position }: EventViewModalProps) {
   const dispatch = useDispatch();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<globalThis.HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as globalThis.Node)) {
         onClose();
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
+    globalThis.document.addEventListener('mousedown', handleClickOutside);
+    globalThis.document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
+      globalThis.document.removeEventListener('mousedown', handleClickOutside);
+      globalThis.document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
@@ -87,7 +87,7 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
             <p className="mt-1 text-sm text-gray-600">
               {format(
                 new Date(event.start),
-                event.allDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
+                event.isAllDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
                 {
                   locale: ko,
                 },
@@ -100,7 +100,7 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
             <p className="mt-1 text-sm text-gray-600">
               {format(
                 new Date(event.end),
-                event.allDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
+                event.isAllDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
                 {
                   locale: ko,
                 },
@@ -108,7 +108,7 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
             </p>
           </div>
 
-          {event.allDay && (
+          {event.isAllDay && (
             <div>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 종일

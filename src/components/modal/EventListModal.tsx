@@ -1,8 +1,10 @@
+'use client';
+
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import React, { useEffect, useRef } from 'react';
 
-import { Event } from '@/types/calendar';
+import { Event } from '@/types/event';
 
 interface EventListModalProps {
   date: Date;
@@ -23,34 +25,34 @@ export const EventListModal: React.FC<EventListModalProps> = ({
   onEventClick,
   position,
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<globalThis.HTMLDivElement>(null);
   const modalWidth = 320; // 모달의 예상 너비
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as globalThis.Node)) {
         onClose();
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
+    globalThis.document.addEventListener('mousedown', handleClickOutside);
+    globalThis.document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
+      globalThis.document.removeEventListener('mousedown', handleClickOutside);
+      globalThis.document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
   const handleEventClick = (event: Event, clickEvent: React.MouseEvent) => {
-    const target = clickEvent.currentTarget as HTMLElement;
+    const target = clickEvent.currentTarget as globalThis.HTMLElement;
     const rect = target.getBoundingClientRect();
-    const windowWidth = window.innerWidth;
+    const windowWidth = globalThis.window.innerWidth;
     const eventModalWidth = 320; // 이벤트 모달의 예상 너비
 
     // 맨 왼쪽 열인지 확인 (x 좌표가 100px 이하인 경우)
@@ -70,7 +72,7 @@ export const EventListModal: React.FC<EventListModalProps> = ({
   };
 
   // 모달 위치 계산
-  const windowWidth = window.innerWidth;
+  const windowWidth = globalThis.window.innerWidth;
   const rightSpace = windowWidth - position.x;
   const showOnRight = rightSpace >= modalWidth;
 
@@ -120,7 +122,7 @@ export const EventListModal: React.FC<EventListModalProps> = ({
               {events.map((event) => {
                 const eventStart = new Date(event.start);
                 const eventEnd = new Date(event.end);
-                const isAllDay = event.allDay;
+                const isAllDay = event.isAllDay;
 
                 return (
                   <div

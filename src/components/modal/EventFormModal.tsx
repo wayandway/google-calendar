@@ -1,7 +1,6 @@
 'use client';
 
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import React, { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
@@ -23,7 +22,7 @@ export default function EventFormModal({
   dateRange,
 }: EventFormModalProps) {
   const dispatch = useDispatch();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<globalThis.HTMLDivElement>(null);
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [start, setStart] = React.useState<Date>(dateRange?.start || selectedDate);
@@ -32,24 +31,24 @@ export default function EventFormModal({
   const [color, setColor] = React.useState('#3b82f6');
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as globalThis.Node)) {
         onClose();
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
+    globalThis.document.addEventListener('mousedown', handleClickOutside);
+    globalThis.document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
+      globalThis.document.removeEventListener('mousedown', handleClickOutside);
+      globalThis.document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
@@ -61,8 +60,12 @@ export default function EventFormModal({
       description,
       start: start.toISOString(),
       end: end.toISOString(),
-      allDay,
+      isAllDay: allDay,
       color,
+      type: 'event',
+      repeat: 'none',
+      author: 'user',
+      zIndex: 0,
     };
     dispatch(addEvent(newEvent));
     onClose();

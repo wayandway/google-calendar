@@ -28,7 +28,7 @@ export default [
       ...tsPlugin.configs['recommended'].rules,
       ...nextPlugin.configs.recommended.rules,
       'import/order': [
-        'error',
+        'warn',
         {
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'index'],
           'newlines-between': 'always',

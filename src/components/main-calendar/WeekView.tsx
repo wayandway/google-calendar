@@ -130,148 +130,172 @@ const WeekView: React.FC<WeekViewProps> = ({
     const weekEvents = getEventsForDateRange(events, startDate, endDate);
 
     return (
-      <div className="grid grid-cols-8 h-full">
+      <div className="grid grid-cols-[4rem_1fr] h-full cursor-default">
         {/* 시간 열 */}
-        <div className="border-r">
+        <div className="border-r border-[#dee2e8]">
           {HOURS.map((hour) => (
-            <div key={hour} className="h-16 border-b text-xs text-gray-500 p-1">
-              {format(new Date().setHours(hour, 0), 'HH:mm')}
+            <div
+              key={hour}
+              className="h-16 border-b border-[#dee2e8] text-[.6rem] text-gray-500 p-1 flex items-start justify-center"
+            >
+              {hour !== 0 && format(new Date().setHours(hour, 0), 'a h시', { locale: ko })}
             </div>
           ))}
         </div>
 
         {/* 날짜별 시간 그리드 */}
-        {days.map((date) => (
-          <div key={date.toISOString()} className="border-r">
-            {HOURS.map((hour) => (
-              <div key={hour} className="h-16 border-b relative">
-                {MINUTES.map((minute) => (
-                  <div
-                    key={minute}
-                    className={`absolute w-full h-4 cursor-pointer transition-colors ${
-                      isTimeSelected(date, hour, minute) ? 'bg-blue-200' : ''
-                    }`}
-                    style={{ top: `${(minute / 60) * 100}%` }}
-                    data-time={`${hour}:${minute}`}
-                    onClick={() => handleDateClick(date, hour, minute)}
-                    onMouseDown={(e) => handleMouseDown(date, hour, minute, e)}
-                    onMouseEnter={() => handleMouseMove(date, hour, minute)}
-                  />
-                ))}
+        <div className="grid grid-cols-7">
+          {days.map((date) => (
+            <div key={date.toISOString()} className="border-r border-[#dee2e8]">
+              {HOURS.map((hour) => (
+                <div key={hour} className="h-16 border-b border-[#dee2e8] relative">
+                  {MINUTES.map((minute) => (
+                    <div
+                      key={minute}
+                      className={`absolute w-full h-4 transition-colors ${
+                        isTimeSelected(date, hour, minute) ? 'bg-blue-200' : ''
+                      }`}
+                      style={{ top: `${(minute / 60) * 100}%` }}
+                      data-time={`${hour}:${minute}`}
+                      onClick={() => handleDateClick(date, hour, minute)}
+                      onMouseDown={(e) => handleMouseDown(date, hour, minute, e)}
+                      onMouseEnter={() => handleMouseMove(date, hour, minute)}
+                    />
+                  ))}
 
-                {/* 해당 시간의 이벤트 표시 (반복 일정 포함) */}
-                {weekEvents
-                  .filter((event) => {
-                    const eventStart = new Date(event.start);
-                    const currentTime = new Date(date);
-                    currentTime.setHours(hour, 0, 0, 0);
+                  {/* 해당 시간의 이벤트 표시 (반복 일정 포함) */}
+                  {weekEvents
+                    .filter((event) => {
+                      const eventStart = new Date(event.start);
+                      const currentTime = new Date(date);
+                      currentTime.setHours(hour, 0, 0, 0);
 
-                    return (
-                      !event.isAllDay &&
-                      isSameDay(eventStart, date) &&
-                      eventStart.getHours() === hour
-                    );
-                  })
-                  .map((event) => {
-                    const eventStart = new Date(event.start);
-                    const eventEnd = new Date(event.end);
-                    const duration = (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60);
-                    const height = (duration / 60) * 100;
+                      return (
+                        !event.isAllDay &&
+                        isSameDay(eventStart, date) &&
+                        eventStart.getHours() === hour
+                      );
+                    })
+                    .map((event) => {
+                      const eventStart = new Date(event.start);
+                      const eventEnd = new Date(event.end);
+                      const duration = (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60);
+                      const height = (duration / 60) * 100;
 
-                    return (
-                      <div
-                        key={event.id}
-                        className="absolute left-0 right-0 mx-1 p-1 text-xs bg-blue-100 rounded cursor-pointer truncate hover:z-10 hover:shadow-md transition-all"
-                        style={{
-                          top: `${(eventStart.getMinutes() / 60) * 100}%`,
-                          height: `${height}%`,
-                          backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
-                          borderLeft: `4px solid ${event.color || '#3b82f6'}`,
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEventClick?.(event, e);
-                        }}
-                      >
-                        {event.title}
-                      </div>
-                    );
-                  })}
-              </div>
-            ))}
-          </div>
-        ))}
+                      return (
+                        <div
+                          key={event.id}
+                          className="absolute left-0 right-0 mx-1 p-1 text-xs bg-blue-100 rounded cursor-pointer truncate hover:z-10 hover:shadow-md transition-all"
+                          style={{
+                            top: `${(eventStart.getMinutes() / 60) * 100}%`,
+                            height: `${height}%`,
+                            backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
+                            borderLeft: `4px solid ${event.color || '#3b82f6'}`,
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEventClick?.(event, e);
+                          }}
+                        >
+                          {event.title}
+                        </div>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col h-full" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div
+      className="flex flex-col h-full cursor-default"
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-8 border-b">
-        <div className="border-r p-2 text-center font-semibold">시간</div>
-        {days.map((date) => (
-          <div
-            key={date.toISOString()}
-            className={`border-r p-2 text-center ${
-              isSameDay(date, new Date()) ? 'bg-blue-50' : ''
-            }`}
-          >
-            <div className="font-semibold">{format(date, 'E', { locale: ko })}</div>
-            <div className="text-sm text-gray-500">{format(date, 'd')}</div>
-          </div>
-        ))}
+      <div className="grid grid-cols-[4rem_1fr] bg-white rounded-t-2xl">
+        <div className="p-2 text-center font-semibold"></div>
+        <div className="grid grid-cols-7">
+          {days.map((date) => (
+            <div key={date.toISOString()} className="p-2 text-center">
+              <div className="text-[11px]">{format(date, 'E', { locale: ko })}</div>
+              <div
+                className={`text-[26px] font-normal ${isSameDay(date, new Date()) ? 'text-white' : 'text-black'}`}
+              >
+                <span
+                  className={`inline-flex items-center justify-center rounded-full p-2 ${
+                    isSameDay(date, new Date()) ? 'bg-[#0953c3] w-12 h-12' : 'w-10 h-10'
+                  }`}
+                >
+                  {format(date, 'd')}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 종일 이벤트 영역 */}
-      <div className="border-b">
-        <div className="grid grid-cols-8">
-          <div className="border-r p-2 text-center font-semibold">종일</div>
-          <div className="col-span-7 relative">
-            {getEventsForDateRange(events, startDate, endDate)
-              .filter((event) => event.isAllDay)
-              .map((event) => {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                const startDayIndex = days.findIndex((day) => isSameDay(day, eventStart));
-                const endDayIndex = days.findIndex((day) => isSameDay(day, eventEnd));
+      <div className="border-b border-[#dee2e8]">
+        <div className="grid grid-cols-[4rem_1fr]">
+          <div className="border-r border-[#dee2e8] p-2 text-center text-[.6rem]">GMT+09</div>
+          <div className="relative">
+            <div className="grid grid-cols-7 h-full">
+              {days.map((date) => (
+                <div key={date.toISOString()} className="border-r border-[#dee2e8]">
+                  {getEventsForDateRange(events, startDate, endDate)
+                    .filter((event) => event.isAllDay)
+                    .map((event) => {
+                      const eventStart = new Date(event.start);
+                      const eventEnd = new Date(event.end);
+                      const startDayIndex = days.findIndex((day) => isSameDay(day, eventStart));
+                      const endDayIndex = days.findIndex((day) => isSameDay(day, eventEnd));
 
-                // 현재 주에 포함되지 않는 이벤트는 표시하지 않음
-                if (startDayIndex === -1 && endDayIndex === -1) return null;
+                      // 현재 주에 포함되지 않는 이벤트는 표시하지 않음
+                      if (startDayIndex === -1 && endDayIndex === -1) return null;
 
-                // 이벤트가 주의 시작일보다 이전에 시작하는 경우
-                const adjustedStartIndex = startDayIndex === -1 ? 0 : startDayIndex;
-                // 이벤트가 주의 마지막 날보다 이후에 끝나는 경우
-                const adjustedEndIndex = endDayIndex === -1 ? 6 : endDayIndex;
+                      // 이벤트가 주의 시작일보다 이전에 시작하는 경우
+                      const adjustedStartIndex = startDayIndex === -1 ? 0 : startDayIndex;
+                      // 이벤트가 주의 마지막 날보다 이후에 끝나는 경우
+                      const adjustedEndIndex = endDayIndex === -1 ? 6 : endDayIndex;
 
-                const daySpan = adjustedEndIndex - adjustedStartIndex + 1;
-                const startPosition = (adjustedStartIndex / 7) * 100;
+                      const daySpan = adjustedEndIndex - adjustedStartIndex + 1;
+                      const startPosition = (adjustedStartIndex / 7) * 100;
 
-                return (
-                  <div
-                    key={event.id}
-                    className="absolute p-1 text-xs bg-blue-100 rounded cursor-pointer truncate"
-                    style={{
-                      left: `${startPosition}%`,
-                      width: `${(daySpan / 7) * 100}%`,
-                      backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
-                      borderLeft: `4px solid ${event.color || '#3b82f6'}`,
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEventClick?.(event, e);
-                    }}
-                  >
-                    {event.title}
-                  </div>
-                );
-              })}
+                      return (
+                        <div
+                          key={event.id}
+                          className="absolute p-1 text-xs bg-blue-100 rounded cursor-pointer truncate"
+                          style={{
+                            left: `${startPosition}%`,
+                            width: `${(daySpan / 7) * 100}%`,
+                            backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
+                            borderLeft: `4px solid ${event.color || '#3b82f6'}`,
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEventClick?.(event, e);
+                          }}
+                        >
+                          {event.title}
+                        </div>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* 시간별 이벤트 영역 */}
-      <div className="flex-1 overflow-auto">{renderTimeGrid()}</div>
+      <div className="flex-1 overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent">
+        {renderTimeGrid()}
+      </div>
     </div>
   );
 };

@@ -123,9 +123,9 @@ export default function MonthView({
       days.push(
         <div
           key={prevDate.toISOString()}
-          className="flex-1 min-h-[100px] p-2 border-r border-b bg-gray-50"
+          className="flex-1 min-h-0 p-2 border-r border-b border-[#dee2e8] bg-white"
         >
-          <div className="text-right text-gray-400">{format(prevDate, 'd')}</div>
+          <div className="text-center text-gray-400 text-[12px]">{format(prevDate, 'd')}</div>
         </div>,
       );
     }
@@ -143,42 +143,15 @@ export default function MonthView({
       days.push(
         <div
           key={currentDate.toISOString()}
-          className={`flex-1 min-h-[100px] p-2 border-r border-b cursor-pointer ${
-            !isCurrentMonth ? 'bg-gray-50' : ''
-          } ${isInRange ? 'bg-blue-100' : ''}`}
-          data-date={currentDate.toISOString().split('T')[0]}
-          onMouseDown={(e) => {
-            if (
-              (e.target as globalThis.HTMLElement).closest('.event-item') ||
-              (e.target as globalThis.HTMLElement).closest('.more-events')
-            ) {
-              e.stopPropagation();
-              return;
-            }
-            handleMouseDown(currentDate, e);
-          }}
+          className={`flex-1 min-h-0 p-2 border-r border-b border-[#dee2e8] bg-white ${
+            isInRange ? 'bg-blue-50' : ''
+          }`}
+          onClick={(e) => handleDateClick(currentDate, e)}
+          onMouseDown={(e) => handleMouseDown(currentDate, e)}
           onMouseEnter={() => handleMouseEnter(currentDate)}
-          onMouseUp={handleMouseUp}
-          onClick={(e) => {
-            if (
-              (e.target as globalThis.HTMLElement).closest('.event-item') ||
-              (e.target as globalThis.HTMLElement).closest('.more-events')
-            ) {
-              e.stopPropagation();
-              return;
-            }
-            handleDateClick(currentDate, e);
-          }}
+          data-date={currentDate.toISOString().split('T')[0]}
         >
-          <div className="text-right">
-            <span
-              className={`inline-block w-8 h-8 leading-8 text-center rounded-full ${
-                isSameDay(currentDate, new Date()) ? 'bg-blue-500 text-white' : ''
-              }`}
-            >
-              {format(currentDate, 'd')}
-            </span>
-          </div>
+          <div className="text-center text-[12px]">{format(currentDate, 'd')}</div>
           <div className="mt-1 space-y-1">
             {dayEvents
               .filter((event) => {
@@ -186,31 +159,22 @@ export default function MonthView({
                 return isSameDay(eventDate, currentDate);
               })
               .slice(0, 3)
-              .map((event) => {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                const isMultiDay = !isSameDay(eventStart, eventEnd);
-                const isFirstDay = isSameDay(eventStart, currentDate);
-
-                return (
-                  <div
-                    key={event.id}
-                    className={`event-item p-1 text-xs rounded cursor-pointer truncate ${
-                      isMultiDay ? 'bg-blue-100 border-l-4' : 'bg-blue-100'
-                    }`}
-                    style={{
-                      borderLeftColor: event.color || '#3b82f6',
-                      backgroundColor: event.color ? `${event.color}20` : '#3b82f620',
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEventClick?.(event, e);
-                    }}
-                  >
-                    {isFirstDay && event.title}
-                  </div>
-                );
-              })}
+              .map((event) => (
+                <div
+                  key={event.id}
+                  className="p-1 text-xs rounded cursor-pointer truncate"
+                  style={{
+                    backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
+                    borderLeft: `4px solid ${event.color || '#3b82f6'}`,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEventClick?.(event, e);
+                  }}
+                >
+                  {event.title}
+                </div>
+              ))}
             {dayEvents.filter((event) => {
               const eventDate = new Date(event.start);
               return isSameDay(eventDate, currentDate);
@@ -243,9 +207,9 @@ export default function MonthView({
       days.push(
         <div
           key={nextDate.toISOString()}
-          className="flex-1 min-h-[100px] p-2 border-r border-b bg-gray-50"
+          className="flex-1 min-h-0 p-2 border-r border-b border-[#dee2e8] bg-white"
         >
-          <div className="text-right text-gray-500">{format(nextDate, 'd')}</div>
+          <div className="text-center text-gray-500 text-[12px]">{format(nextDate, 'd')}</div>
         </div>,
       );
     }
@@ -254,15 +218,17 @@ export default function MonthView({
   };
 
   return (
-    <div className="flex-1 overflow-auto">
-      <div className="grid grid-cols-7 border-b bg-white">
+    <div className="flex-1 overflow-auto h-full">
+      <div className="grid grid-cols-7 bg-white rounded-t-2xl [&>div]:border-r [&>div]:border-[#dee2e8]">
         {DAYS_OF_WEEK.map((day) => (
-          <div key={day} className="p-2 text-center font-medium text-gray-600">
+          <div key={day} className="p-2 text-center font-medium text-gray-600 text-[11px]">
             {day}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 h-full">{renderCalendarDays()}</div>
+      <div className="grid grid-cols-7 h-[calc(100%-2.5rem)] rounded-b-2xl [&>div]:border-r [&>div]:border-b [&>div]:border-[#dee2e8]">
+        {renderCalendarDays()}
+      </div>
       {showEventList && selectedDate && (
         <EventListModal
           date={selectedDate}

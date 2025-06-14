@@ -106,7 +106,7 @@ export default function MainCalendar() {
 
   return (
     <div className="flex flex-col h-full calendar-container">
-      <div className="flex-1 overflow-auto" onWheel={handleWheel}>
+      <div className="flex-1 overflow-auto rounded-lg bg-white" onWheel={handleWheel}>
         {view === 'month' ? (
           <MonthView
             currentDate={new Date(currentDate)}

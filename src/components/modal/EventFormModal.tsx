@@ -254,47 +254,50 @@ export default function EventFormModal({
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <div className="flex-1 flex space-x-2">
+              <div className="flex-1 flex flex-col space-y-2">
                 <input
                   type="text"
                   value={format(start, 'M월 d일 (eee)', { locale: ko })}
                   readOnly
                   className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
                 />
-                {!allDay &&
-                  (isTimeEditable ? (
-                    <>
-                      <input
-                        type="datetime-local"
-                        value={format(start, "yyyy-MM-dd'T'HH:mm")}
-                        onChange={(e) => setStart(new Date(e.target.value))}
-                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
-                      />
-                      <span className="flex items-center">-</span>
-                      <input
-                        type="datetime-local"
-                        value={format(end, "yyyy-MM-dd'T'HH:mm")}
-                        onChange={(e) => setEnd(new Date(e.target.value))}
-                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <input
-                        type="text"
-                        value={format(start, 'a h:mm', { locale: ko })}
-                        readOnly
-                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
-                      />
-                      <span className="flex items-center">-</span>
-                      <input
-                        type="text"
-                        value={format(end, 'a h:mm', { locale: ko })}
-                        readOnly
-                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
-                      />
-                    </>
-                  ))}
+                {!allDay && (
+                  <div className="flex flex-col space-y-2">
+                    {isTimeEditable ? (
+                      <div className="flex flex-col space-y-2">
+                        <input
+                          type="datetime-local"
+                          value={format(start, "yyyy-MM-dd'T'HH:mm")}
+                          onChange={(e) => setStart(new Date(e.target.value))}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                        />
+                        <span className="flex items-center justify-center">-</span>
+                        <input
+                          type="datetime-local"
+                          value={format(end, "yyyy-MM-dd'T'HH:mm")}
+                          onChange={(e) => setEnd(new Date(e.target.value))}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col space-y-2">
+                        <input
+                          type="text"
+                          value={format(start, 'a h:mm', { locale: ko })}
+                          readOnly
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                        />
+                        <span className="flex items-center justify-center">-</span>
+                        <input
+                          type="text"
+                          value={format(end, 'a h:mm', { locale: ko })}
+                          readOnly
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -21,11 +21,11 @@ export const useBreakpoint = () => {
   useEffect(() => {
     function handleResize() {
       setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: globalThis.window.innerWidth,
+        height: globalThis.window.innerHeight,
       });
 
-      const width = window.innerWidth;
+      const width = globalThis.window.innerWidth;
 
       if (width < parseInt(breakpoints.tablet)) {
         setBreakpoint('mobile');
@@ -38,10 +38,10 @@ export const useBreakpoint = () => {
       }
     }
 
-    window.addEventListener('resize', handleResize);
+    globalThis.window.addEventListener('resize', handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => globalThis.window.removeEventListener('resize', handleResize);
   }, []);
 
   return { breakpoint, dimensions };

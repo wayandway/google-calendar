@@ -25,6 +25,7 @@ export default function Header() {
     const newDate = new Date(date);
     if (view === 'week') {
       newDate.setDate(date.getDate() - 7);
+      dispatch(setSelectedDate(newDate.toISOString()));
     } else {
       newDate.setMonth(date.getMonth() - 1);
     }
@@ -35,6 +36,7 @@ export default function Header() {
     const newDate = new Date(date);
     if (view === 'week') {
       newDate.setDate(date.getDate() + 7);
+      dispatch(setSelectedDate(newDate.toISOString()));
     } else {
       newDate.setMonth(date.getMonth() + 1);
     }

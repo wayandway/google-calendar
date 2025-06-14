@@ -1,22 +1,30 @@
-'use client';
-
-import { useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import React, { useEffect, useRef } from 'react';
 
-import { RootState } from '@/store';
-import { Event } from '@/types/event';
+import { Event } from '@/types/calendar';
 
 interface EventListModalProps {
-  selectedDate: Date;
+  date: Date;
+  events: Event[];
   onClose: () => void;
+  onEventClick: (
+    event: Event,
+    clickEvent: React.MouseEvent,
+    position?: { x: number; y: number },
+  ) => void;
   position: { x: number; y: number };
 }
 
-export default function EventListModal({ selectedDate, onClose, position }: EventListModalProps) {
+export const EventListModal: React.FC<EventListModalProps> = ({
+  date,
+  events,
+  onClose,
+  onEventClick,
+  position,
+}) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { events } = useSelector((state: RootState) => state.calendar);
+  const modalWidth = 320; // 모달의 예상 너비
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,53 +33,128 @@ export default function EventListModal({ selectedDate, onClose, position }: Even
       }
     };
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
-  const dayEvents = events.filter((event: Event) => {
-    const eventDate = new Date(event.start);
-    return (
-      eventDate.getDate() === selectedDate.getDate() &&
-      eventDate.getMonth() === selectedDate.getMonth() &&
-      eventDate.getFullYear() === selectedDate.getFullYear()
-    );
-  });
+  const handleEventClick = (event: Event, clickEvent: React.MouseEvent) => {
+    const target = clickEvent.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const eventModalWidth = 320; // 이벤트 모달의 예상 너비
+
+    // 맨 왼쪽 열인지 확인 (x 좌표가 100px 이하인 경우)
+    const isLeftmostColumn = position.x <= 100;
+
+    // 이벤트 모달 위치 계산
+    const eventModalPosition = {
+      x: isLeftmostColumn
+        ? rect.right
+        : windowWidth - rect.right >= eventModalWidth
+          ? rect.right
+          : rect.left - eventModalWidth,
+      y: rect.top,
+    };
+
+    onEventClick(event, clickEvent, eventModalPosition);
+  };
+
+  // 모달 위치 계산
+  const windowWidth = window.innerWidth;
+  const rightSpace = windowWidth - position.x;
+  const showOnRight = rightSpace >= modalWidth;
+
+  // 맨 왼쪽 열인지 확인 (x 좌표가 100px 이하인 경우)
+  const isLeftmostColumn = position.x <= 100;
+
+  // 모달 외부 클릭 처리
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
     <div
-      ref={modalRef}
-      className="fixed bg-white rounded-lg shadow-lg p-4 w-96"
-      style={{ top: position.y, left: position.x }}
+      className="fixed inset-0 z-50"
+      style={{
+        pointerEvents: 'auto',
+      }}
+      onClick={handleBackdropClick}
     >
-      <h2 className="text-lg font-semibold mb-4">
-        {format(selectedDate, 'yyyy년 MM월 dd일', { locale: ko })} 일정
-      </h2>
-      {dayEvents.length > 0 ? (
-        <div className="space-y-2">
-          {dayEvents.map((event) => (
-            <div
-              key={event.id}
-              className="p-2 rounded cursor-pointer hover:bg-gray-50"
-              style={{ borderLeft: `4px solid ${event.color || '#3b82f6'}` }}
-            >
-              <div className="font-medium">{event.title}</div>
-              <div className="text-sm text-gray-500">
-                {format(new Date(event.start), 'HH:mm')} - {format(new Date(event.end), 'HH:mm')}
-              </div>
-            </div>
-          ))}
+      <div
+        ref={modalRef}
+        className="absolute bg-white rounded-lg shadow-xl w-80 max-h-[80vh] overflow-hidden"
+        style={{
+          left: position.x,
+          top: position.y,
+          transform: isLeftmostColumn ? 'none' : showOnRight ? 'none' : 'translateX(-100%)',
+        }}
+        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 이벤트 전파 방지
+      >
+        <div className="p-4 border-b">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">
+              {format(date, 'yyyy년 MM월 dd일', { locale: ko })}
+            </h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              ✕
+            </button>
+          </div>
         </div>
-      ) : (
-        <div className="text-gray-500 text-center py-4">등록된 일정이 없습니다.</div>
-      )}
-      <div className="mt-4 flex justify-end">
-        <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
-          닫기
-        </button>
+        <div className="p-4 overflow-y-auto max-h-[calc(80vh-4rem)]">
+          {events.length === 0 ? (
+            <div className="text-center text-gray-500 py-4">등록된 일정이 없습니다.</div>
+          ) : (
+            <div className="space-y-2">
+              {events.map((event) => {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
+                const isAllDay = event.allDay;
+
+                return (
+                  <div
+                    key={event.id}
+                    className="p-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 이벤트 클릭 시에도 이벤트 전파 방지
+                      handleEventClick(event, e);
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-2 h-2 rounded-full mt-2"
+                        style={{ backgroundColor: event.color || '#3b82f6' }}
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium">{event.title}</h3>
+                        <p className="text-sm text-gray-500">
+                          {isAllDay
+                            ? '종일'
+                            : `${format(eventStart, 'HH:mm')} - ${format(eventEnd, 'HH:mm')}`}
+                        </p>
+                        {event.description && (
+                          <p className="text-sm text-gray-600 mt-1">{event.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};

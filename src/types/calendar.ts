@@ -1,4 +1,3 @@
-import type React from 'react';
 import { Event } from './event';
 
 export type CalendarView = 'month' | 'week' | 'day';

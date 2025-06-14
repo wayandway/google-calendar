@@ -1,13 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Event } from '@/types/event';
+import { loadEventsFromStorage, saveEventsToStorage } from '@/utils/storage';
 
 interface EventState {
   events: Event[];
+  selectedEvent: Event | null;
 }
 
 const initialState: EventState = {
-  events: [],
+  events: loadEventsFromStorage(),
+  selectedEvent: null,
 };
 
 const eventSlice = createSlice({
@@ -16,19 +19,24 @@ const eventSlice = createSlice({
   reducers: {
     addEvent: (state, action: PayloadAction<Event>) => {
       state.events.push(action.payload);
+      saveEventsToStorage(state.events);
     },
     updateEvent: (state, action: PayloadAction<Event>) => {
       const index = state.events.findIndex((event) => event.id === action.payload.id);
       if (index !== -1) {
         state.events[index] = action.payload;
+        saveEventsToStorage(state.events);
       }
     },
     deleteEvent: (state, action: PayloadAction<string>) => {
-      const eventId = action.payload.split('_')[0];
-      state.events = state.events.filter((event) => event.id !== eventId);
+      state.events = state.events.filter((event) => event.id !== action.payload);
+      saveEventsToStorage(state.events);
+    },
+    setSelectedEvent: (state, action: PayloadAction<Event | null>) => {
+      state.selectedEvent = action.payload;
     },
   },
 });
 
-export const { addEvent, updateEvent, deleteEvent } = eventSlice.actions;
+export const { addEvent, updateEvent, deleteEvent, setSelectedEvent } = eventSlice.actions;
 export default eventSlice.reducer;

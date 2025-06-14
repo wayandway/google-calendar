@@ -1,8 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -118,12 +117,6 @@ export default function EventFormModal({
     // 선택한 날짜의 요일 가져오기
     const selectedDayOfWeek = start.getDay();
 
-    // 기본 반복 설정
-    const baseRecurrence = {
-      type,
-      interval: 1,
-    };
-
     switch (type) {
       case 'weekly':
         setSelectedDays([selectedDayOfWeek]); // 선택한 날짜의 요일로 초기화
@@ -169,12 +162,6 @@ export default function EventFormModal({
     };
     dispatch(addEvent(newEvent));
     onClose();
-  };
-
-  const handleDayToggle = (day: number) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
-    );
   };
 
   const renderRecurrenceOptions = () => {

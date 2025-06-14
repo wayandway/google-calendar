@@ -6,8 +6,8 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
 import { RootState } from '@/store';
-import { setSelectedDate, setCurrentDate, setView } from '@/store/features/calendarSlice';
-import { toggleSidebar } from '@/store/features/layoutSlice';
+import { setSelectedDate, setCurrentDate, setView } from '@/store/slices/calendarSlice';
+import { toggleSidebar } from '@/store/slices/layoutSlice';
 
 export default function Header() {
   const dispatch = useDispatch();

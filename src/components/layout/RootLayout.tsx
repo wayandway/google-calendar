@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
-import Header from './Header';
-import Sidebar from './Sidebar';
-
+import Header from '@/components/layout/Header';
+import Sidebar from '@/components/layout/Sidebar';
 import { RootState } from '@/store';
 
 interface RootLayoutProps {

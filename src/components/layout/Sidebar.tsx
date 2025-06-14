@@ -13,17 +13,17 @@ export default function Sidebar() {
   const { selectedDate } = useSelector((state: RootState) => state.calendar);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<globalThis.HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as globalThis.Node)) {
         setIsDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    globalThis.document.addEventListener('mousedown', handleClickOutside);
+    return () => globalThis.document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleCreateClick = () => {

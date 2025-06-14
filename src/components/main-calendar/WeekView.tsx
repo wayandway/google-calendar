@@ -218,7 +218,7 @@ const WeekView: React.FC<WeekViewProps> = ({
             }`}
           >
             <div className="font-semibold">{format(date, 'E', { locale: ko })}</div>
-            <div className="text-sm text-gray-500">{format(date, 'M/d')}</div>
+            <div className="text-sm text-gray-500">{format(date, 'd')}</div>
           </div>
         ))}
       </div>

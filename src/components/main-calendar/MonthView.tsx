@@ -17,6 +17,8 @@ import { MonthViewProps } from '@/types/calendar';
 import { Event } from '@/types/event';
 import { getEventsForDateRange } from '@/utils/recurrence';
 
+const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+
 export default function MonthView({
   currentDate,
   events = [],
@@ -253,6 +255,13 @@ export default function MonthView({
 
   return (
     <div className="flex-1 overflow-auto">
+      <div className="grid grid-cols-7 border-b bg-white">
+        {DAYS_OF_WEEK.map((day) => (
+          <div key={day} className="p-2 text-center font-medium text-gray-600">
+            {day}
+          </div>
+        ))}
+      </div>
       <div className="grid grid-cols-7 h-full">{renderCalendarDays()}</div>
       {showEventList && selectedDate && (
         <EventListModal

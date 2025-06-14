@@ -42,7 +42,8 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
   }, [onClose]);
 
   const handleDelete = () => {
-    dispatch(deleteEvent(event.id));
+    const eventId = event.id.split('_')[0];
+    dispatch(deleteEvent(eventId));
     onClose();
   };
 

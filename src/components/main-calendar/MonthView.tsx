@@ -7,12 +7,15 @@ import {
   isSameMonth,
   isSameDay,
   isWithinInterval,
+  startOfWeek,
+  endOfWeek,
 } from 'date-fns';
 import React, { useState } from 'react';
 
 import { EventListModal } from '@/components/modal/EventListModal';
 import { MonthViewProps } from '@/types/calendar';
 import { Event } from '@/types/event';
+import { getEventsForDateRange } from '@/utils/recurrence';
 
 export default function MonthView({
   currentDate,
@@ -111,6 +114,7 @@ export default function MonthView({
     const totalDays = endDate.getDate();
 
     // 이전 달의 날짜들
+    const prevMonthStart = startOfWeek(startDate);
     for (let i = 0; i < startDay; i++) {
       const prevDate = new Date(startDate);
       prevDate.setDate(prevDate.getDate() - (startDay - i));
@@ -131,11 +135,8 @@ export default function MonthView({
       const isCurrentMonth = isSameMonth(currentDate, startDate);
       const isInRange = isInDragRange(currentDate);
 
-      // 해당 날짜의 이벤트들을 가져옴
-      const dayEvents = events.filter((event) => {
-        const eventDate = new Date(event.start);
-        return isSameDay(eventDate, currentDate);
-      });
+      // 해당 날짜의 이벤트들을 가져옴 (반복 일정 포함)
+      const dayEvents = getEventsForDateRange(events, prevMonthStart, endOfWeek(endDate));
 
       days.push(
         <div
@@ -145,7 +146,6 @@ export default function MonthView({
           } ${isInRange ? 'bg-blue-100' : ''}`}
           data-date={currentDate.toISOString().split('T')[0]}
           onMouseDown={(e) => {
-            // 이벤트 영역을 클릭한 경우 드래그 시작하지 않음
             if (
               (e.target as globalThis.HTMLElement).closest('.event-item') ||
               (e.target as globalThis.HTMLElement).closest('.more-events')
@@ -158,7 +158,6 @@ export default function MonthView({
           onMouseEnter={() => handleMouseEnter(currentDate)}
           onMouseUp={handleMouseUp}
           onClick={(e) => {
-            // 이벤트 영역이나 더보기를 클릭한 경우 날짜 클릭 이벤트 발생하지 않음
             if (
               (e.target as globalThis.HTMLElement).closest('.event-item') ||
               (e.target as globalThis.HTMLElement).closest('.more-events')
@@ -179,32 +178,41 @@ export default function MonthView({
             </span>
           </div>
           <div className="mt-1 space-y-1">
-            {dayEvents.slice(0, 3).map((event) => {
-              const eventStart = new Date(event.start);
-              const eventEnd = new Date(event.end);
-              const isMultiDay = !isSameDay(eventStart, eventEnd);
-              const isFirstDay = isSameDay(eventStart, currentDate);
+            {dayEvents
+              .filter((event) => {
+                const eventDate = new Date(event.start);
+                return isSameDay(eventDate, currentDate);
+              })
+              .slice(0, 3)
+              .map((event) => {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
+                const isMultiDay = !isSameDay(eventStart, eventEnd);
+                const isFirstDay = isSameDay(eventStart, currentDate);
 
-              return (
-                <div
-                  key={event.id}
-                  className={`event-item p-1 text-xs rounded cursor-pointer truncate ${
-                    isMultiDay ? 'bg-blue-100 border-l-4' : 'bg-blue-100'
-                  }`}
-                  style={{
-                    borderLeftColor: event.color || '#3b82f6',
-                    backgroundColor: event.color ? `${event.color}20` : '#3b82f620',
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEventClick?.(event, e);
-                  }}
-                >
-                  {isFirstDay && event.title}
-                </div>
-              );
-            })}
-            {dayEvents.length > 3 && (
+                return (
+                  <div
+                    key={event.id}
+                    className={`event-item p-1 text-xs rounded cursor-pointer truncate ${
+                      isMultiDay ? 'bg-blue-100 border-l-4' : 'bg-blue-100'
+                    }`}
+                    style={{
+                      borderLeftColor: event.color || '#3b82f6',
+                      backgroundColor: event.color ? `${event.color}20` : '#3b82f620',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEventClick?.(event, e);
+                    }}
+                  >
+                    {isFirstDay && event.title}
+                  </div>
+                );
+              })}
+            {dayEvents.filter((event) => {
+              const eventDate = new Date(event.start);
+              return isSameDay(eventDate, currentDate);
+            }).length > 3 && (
               <div
                 className="more-events text-xs text-gray-500 cursor-pointer hover:text-gray-700"
                 onClick={(e) => {
@@ -213,7 +221,11 @@ export default function MonthView({
                   handleMoreClick(currentDate, e);
                 }}
               >
-                {dayEvents.length - 3}개 더보기
+                {dayEvents.filter((event) => {
+                  const eventDate = new Date(event.start);
+                  return isSameDay(eventDate, currentDate);
+                }).length - 3}{' '}
+                개 더보기
               </div>
             )}
           </div>
@@ -245,10 +257,7 @@ export default function MonthView({
       {showEventList && selectedDate && (
         <EventListModal
           date={selectedDate}
-          events={events.filter((event) => {
-            const eventDate = new Date(event.start);
-            return isSameDay(eventDate, selectedDate);
-          })}
+          events={getEventsForDateRange(events, selectedDate, selectedDate)}
           onClose={handleEventListClose}
           onEventClick={handleEventListEventClick}
           position={modalPosition}

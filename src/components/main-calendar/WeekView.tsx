@@ -5,6 +5,7 @@ import { ko } from 'date-fns/locale';
 import React, { useState } from 'react';
 
 import { WeekViewProps } from '@/types/calendar';
+import { getEventsForDateRange } from '@/utils/recurrence';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 4 }, (_, i) => i * 15); // 15분 단위로 4개 (0, 15, 30, 45)
@@ -21,6 +22,7 @@ const WeekView: React.FC<WeekViewProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const startDate = startOfWeek(currentDate, { locale: ko });
+  const endDate = addDays(startDate, 6);
   const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
 
   const handleDateClick = (date: Date, hour: number, minute: number, event?: React.MouseEvent) => {
@@ -124,6 +126,9 @@ const WeekView: React.FC<WeekViewProps> = ({
   };
 
   const renderTimeGrid = () => {
+    // 주간의 모든 이벤트를 가져옴
+    const weekEvents = getEventsForDateRange(events, startDate, endDate);
+
     return (
       <div className="grid grid-cols-8 h-full">
         {/* 시간 열 */}
@@ -154,8 +159,8 @@ const WeekView: React.FC<WeekViewProps> = ({
                   />
                 ))}
 
-                {/* 해당 시간의 이벤트 표시 */}
-                {events
+                {/* 해당 시간의 이벤트 표시 (반복 일정 포함) */}
+                {weekEvents
                   .filter((event) => {
                     const eventStart = new Date(event.start);
                     const currentTime = new Date(date);
@@ -223,7 +228,7 @@ const WeekView: React.FC<WeekViewProps> = ({
         <div className="grid grid-cols-8">
           <div className="border-r p-2 text-center font-semibold">종일</div>
           <div className="col-span-7 relative">
-            {events
+            {getEventsForDateRange(events, startDate, endDate)
               .filter((event) => event.isAllDay)
               .map((event) => {
                 const eventStart = new Date(event.start);
@@ -249,7 +254,6 @@ const WeekView: React.FC<WeekViewProps> = ({
                     style={{
                       left: `${startPosition}%`,
                       width: `${(daySpan / 7) * 100}%`,
-                      height: '24px',
                       backgroundColor: event.color ? `${event.color}40` : '#3b82f640',
                       borderLeft: `4px solid ${event.color || '#3b82f6'}`,
                     }}
@@ -266,7 +270,7 @@ const WeekView: React.FC<WeekViewProps> = ({
         </div>
       </div>
 
-      {/* 시간 그리드 */}
+      {/* 시간별 이벤트 영역 */}
       <div className="flex-1 overflow-auto">{renderTimeGrid()}</div>
     </div>
   );

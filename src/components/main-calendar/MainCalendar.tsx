@@ -28,7 +28,17 @@ export default function MainCalendar() {
   const handleDateClick = (date: Date, event?: React.MouseEvent) => {
     if (event) {
       const rect = event.currentTarget.getBoundingClientRect();
-      setModalPosition({ x: rect.left - 320, y: rect.top });
+      const modalWidth = 416; // 26rem
+      const modalHeight = 544; // 34rem
+
+      let x = rect.left - modalWidth;
+      let y = rect.top;
+
+      // Ensure modal stays within viewport
+      x = Math.max(0, Math.min(x, globalThis.innerWidth - modalWidth));
+      y = Math.max(0, Math.min(y, globalThis.innerHeight - modalHeight));
+
+      setModalPosition({ x, y });
     }
     dispatch(setSelectedDate(date.toISOString()));
     setSelectedDateRange(null);
@@ -38,7 +48,16 @@ export default function MainCalendar() {
   const handleEventClick = (event: Event, clickEvent: React.MouseEvent) => {
     clickEvent.stopPropagation();
     const rect = clickEvent.currentTarget.getBoundingClientRect();
-    setModalPosition({ x: rect.left - 320, y: rect.top });
+    const modalWidth = 416;
+    const modalHeight = 544;
+
+    let x = rect.left - modalWidth;
+    let y = rect.top;
+
+    x = Math.max(0, Math.min(x, globalThis.innerWidth - modalWidth));
+    y = Math.max(0, Math.min(y, globalThis.innerHeight - modalHeight));
+
+    setModalPosition({ x, y });
     setSelectedEvent(event);
     setIsViewModalOpen(true);
   };
@@ -46,6 +65,9 @@ export default function MainCalendar() {
   const handleDateRangeSelect = (start: Date, end: Date) => {
     dispatch(setSelectedDate(start.toISOString()));
     setSelectedDateRange({ start, end });
+
+    const modalWidth = 416;
+    const modalHeight = 544;
 
     // 모달 위치 계산
     const calendarElement = globalThis.document.querySelector('.calendar-container');
@@ -59,20 +81,27 @@ export default function MainCalendar() {
 
       if (cellElement) {
         const cellRect = cellElement.getBoundingClientRect();
-        setModalPosition({
-          x: cellRect.left - 320, // 모달 너비(320px)만큼 왼쪽으로
-          y: cellRect.top,
-        });
+        let x = cellRect.left - modalWidth;
+        let y = cellRect.top;
+
+        x = Math.max(0, Math.min(x, globalThis.innerWidth - modalWidth));
+        y = Math.max(0, Math.min(y, globalThis.innerHeight - modalHeight));
+
+        setModalPosition({ x, y });
       } else {
         // 셀 요소를 찾지 못한 경우 기본 위치 계산
         const rect = calendarElement.getBoundingClientRect();
         const dayWidth = rect.width / 7;
         const dayIndex = start.getDay();
-        const x = rect.left + dayWidth * dayIndex - 320;
-        const y =
+        let x = rect.left + dayWidth * dayIndex - modalWidth;
+        let y =
           view === 'week'
             ? rect.top + ((start.getHours() * 60 + start.getMinutes()) * 60) / 60
             : rect.top;
+
+        x = Math.max(0, Math.min(x, globalThis.innerWidth - modalWidth));
+        y = Math.max(0, Math.min(y, globalThis.innerHeight - modalHeight));
+
         setModalPosition({ x, y });
       }
     }

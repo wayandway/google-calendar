@@ -1,6 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import React, { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
@@ -53,6 +54,7 @@ export default function EventFormModal({
   const [dayOfMonth, setDayOfMonth] = React.useState<number>(1);
   const [month, setMonth] = React.useState<number>(1);
   const [recurrenceEndDate, setRecurrenceEndDate] = React.useState('');
+  const [isTimeEditable, setIsTimeEditable] = React.useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: globalThis.MouseEvent) => {
@@ -81,7 +83,8 @@ export default function EventFormModal({
       setStart(dateRange.start);
       setEnd(dateRange.end);
     }
-  }, [dateRange]);
+    setIsTimeEditable(!allDay);
+  }, [dateRange, allDay]);
 
   const getRecurrenceOptions = () => {
     const selectedDayOfWeek = start.getDay();
@@ -187,113 +190,185 @@ export default function EventFormModal({
     >
       <div
         ref={modalRef}
-        className="absolute bg-white rounded-lg shadow-lg p-4 w-80"
+        className="absolute bg-white rounded-lg shadow-lg p-4 w-[26rem] h-[34rem] flex flex-col justify-between"
         style={{
           left: position.x,
           top: position.y,
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">일정 추가</h2>
-            <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-700">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <div className="flex justify-end items-center">
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
+            >
               ✕
             </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">제목</label>
+          <div className="mt-4 flex-1 flex flex-col gap-4">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full text-2xl font-normal text-gray-800 focus:outline-none placeholder-gray-400 border-b border-gray-300 pb-2"
+              placeholder="제목 추가"
               required
             />
+
+            <div className="flex space-x-2">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-md bg-blue-100 text-blue-800 text-sm font-medium border border-blue-100"
+              >
+                이벤트
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-md text-gray-600 text-sm font-medium"
+              >
+                할 일
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-md text-gray-600 text-sm font-medium"
+              >
+                약속 일정
+              </button>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <svg
+                className="w-6 h-6 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <div className="flex-1 flex space-x-2">
+                <input
+                  type="text"
+                  value={format(start, 'M월 d일 (eee)', { locale: ko })}
+                  readOnly
+                  className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                />
+                {!allDay &&
+                  (isTimeEditable ? (
+                    <>
+                      <input
+                        type="datetime-local"
+                        value={format(start, "yyyy-MM-dd'T'HH:mm")}
+                        onChange={(e) => setStart(new Date(e.target.value))}
+                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                      />
+                      <span className="flex items-center">-</span>
+                      <input
+                        type="datetime-local"
+                        value={format(end, "yyyy-MM-dd'T'HH:mm")}
+                        onChange={(e) => setEnd(new Date(e.target.value))}
+                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={format(start, 'a h:mm', { locale: ko })}
+                        readOnly
+                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                      />
+                      <span className="flex items-center">-</span>
+                      <input
+                        type="text"
+                        value={format(end, 'a h:mm', { locale: ko })}
+                        readOnly
+                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                      />
+                    </>
+                  ))}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="allDay"
+                checked={allDay}
+                onChange={(e) => {
+                  setAllDay(e.target.checked);
+                  if (e.target.checked) {
+                    setIsTimeEditable(false);
+                  }
+                }}
+                className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+              />
+              <label htmlFor="allDay" className="text-sm text-gray-700">
+                종일
+              </label>
+              {!allDay && (
+                <button
+                  type="button"
+                  className="text-sm text-blue-600 font-medium"
+                  onClick={() => setIsTimeEditable(true)}
+                >
+                  시간대
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <svg
+                className="w-6 h-6 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h7"
+                ></path>
+              </svg>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 placeholder-gray-400 p-2"
+                rows={3}
+                placeholder="설명"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <select
+                value={recurrenceType}
+                onChange={(e) => handleRecurrenceTypeChange(e.target.value as RecurrenceType)}
+                className="block w-48 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                {getRecurrenceOptions().map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {renderRecurrenceOptions()}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">설명</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">시작</label>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={format(start, allDay ? 'yyyy-MM-dd' : "yyyy-MM-dd'T'HH:mm")}
-              onChange={(e) => setStart(new Date(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">종료</label>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={format(end, allDay ? 'yyyy-MM-dd' : "yyyy-MM-dd'T'HH:mm")}
-              onChange={(e) => setEnd(new Date(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="allDay"
-              checked={allDay}
-              onChange={(e) => setAllDay(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label htmlFor="allDay" className="ml-2 block text-sm text-gray-700">
-              종일
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">색상</label>
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">반복</label>
-            <select
-              value={recurrenceType}
-              onChange={(e) => handleRecurrenceTypeChange(e.target.value as RecurrenceType)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              {getRecurrenceOptions().map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {renderRecurrenceOptions()}
-
-          <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              취소
-            </button>
+          <div className="flex justify-end mt-6">
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
               저장
             </button>

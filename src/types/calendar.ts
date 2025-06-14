@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Event } from './event';
 
 export type CalendarView = 'month' | 'week' | 'day';
@@ -33,7 +35,11 @@ export interface CalendarState {
 
 export interface BaseCalendarProps {
   events?: Event[];
-  onEventClick?: (event: Event, clickEvent: React.MouseEvent) => void;
+  onEventClick?: (
+    event: Event,
+    clickEvent: React.MouseEvent,
+    position?: { x: number; y: number },
+  ) => void;
   onDateClick?: (date: Date, event?: React.MouseEvent) => void;
   onDateRangeSelect?: (start: Date, end: Date) => void;
   selectedRange?: { start: Date; end: Date } | null;

@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import type React from 'react';
+import React from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 

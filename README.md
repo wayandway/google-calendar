@@ -33,25 +33,31 @@ https://google-calendar-swart.vercel.app
     # 브라우저에서 http://localhost:3000 접속 후 애플리케이션 확인 가능
     ```
 
-## 2. 상태의 흐름 (도식화)
+## 2. 상태의 흐름
 
-```mermaid
-graph TD
-    User_Interaction[사용자 상호작용] --> Components(UI 컴포넌트)
-    Components --> Dispatch_Action(액션 디스패치)
-    Dispatch_Action --> Redux_Store(Redux Store)
-    Redux_Store --> Slices(calendarSlice, eventSlice 등)
-    Slices -- 상태 업데이트 --> Redux_Store
-    Redux_Store -- 상태 구독 --> Components
-    Components -- UI 렌더링 --> User_View[사용자 화면]
-```
+### 2.1. 전역 상태 관리 (Redux Toolkit)
 
-### 상세 설명
+- `calendarSlice` : 현재 날짜, 뷰 모드 (월/주), 선택된 날짜 등 캘린더의 핵심 상태를 관리합니다.
 
-- **전역 상태 관리**: Redux Toolkit을 사용하여 `calendarSlice` (현재 날짜, 뷰 모드 등 캘린더 상태), `eventSlice` (이벤트 목록, 선택된 이벤트 등 이벤트 상태), `layoutSlice` (사이드바, 미니 캘린더 열림/닫힘 상태) 등의 전역 상태를 관리합니다. 이를 통해 애플리케이션 전체에서 일관된 상태를 유지하고 컴포넌트 간의 데이터 전달을 효율화합니다.
-- **미니 캘린더, 메인 캘린더의 동기화**: `calendarSlice`의 `currentDate` 상태를 통해 미니 캘린더와 메인 캘린더가 항상 동일한 날짜를 바라보도록 동기화됩니다. 한 캘린더에서 날짜를 변경하면 다른 캘린더도 자동으로 업데이트됩니다.
-- **모달 상태 관리**: `MainCalendar` 컴포넌트에서 `isFormModalOpen`, `isViewModalOpen` 등의 상태를 관리하여 이벤트 생성/조회 모달의 열림/닫힘을 제어합니다. 또한 `modalPosition` 상태를 통해 모달의 위치를 동적으로 결정하여 사용자 클릭 지점 근처에 모달이 표시되도록 합니다.
-- **로컬스토리지 활용**: 이벤트 데이터(`eventSlice`의 `events`)는 브라우저의 로컬 스토리지에 저장됩니다. 이를 통해 사용자가 페이지를 닫았다가 다시 열어도 기존에 생성했던 이벤트들이 유지됩니다.
+- `eventSlice` : 생성, 수정, 삭제되는 모든 이벤트(일정) 데이터를 관리합니다.
+
+- `layoutSlice` : 사이드바, 미니 캘린더, 모달의 열림/닫힘 상태 등 UI 레이아웃 관련 상태를 관리합니다.
+
+### 2.2. 미니 캘린더와 메인 캘린더의 동기화
+
+- 두 캘린더는 동일한 `calendarSlice`의 `currentDate` 상태를 공유합니다.
+
+- 사용자가 어느 한 캘린더에서 날짜를 변경하면 `setCurrentDate` 액션을 디스패치하여 전역 상태를 업데이트하고, 이 변화는 즉시 다른 캘린더에도 반영되어 동기화된 뷰를 볼 수 있습니다.
+
+### 2.3. 모달 상태 관리
+
+- 이벤트 생성 모달(`EventFormModal`)과 이벤트 상세 보기 모달(`EventViewModal`)은 `layoutSlice`의 상태(`isFormModalOpen`, `isViewModalOpen`)에 따라 열리고 닫힙니다.
+
+- 또한 `MainCalendar` 컴포넌트에서 클릭된 날짜나 이벤트의 위치를 계산해 모달의 `position` 상태로 전달되고, 모달이 사용자가 클릭한 위치 근처에 나타나도록 관리합니다.
+
+### 2.4. 상태 저장 - 로컬스토리지
+
+- 사용자가 생성한 이벤트 데이터는 브라우저의 로컬스토리지에 저장되어 애플리케이션을 닫았다가 다시 열어도 데이터가 유지되도록 했습니다.
 
 ## 3. UX를 위해 추가한 요소들
 
@@ -68,18 +74,34 @@ graph TD
 
 ## 4. 주요 문제 사항
 
-- **이벤트 일정 중복 구현** : 여러 이벤트(일정)가 동시에 발생할 경우 겹치지 않게 시각적으로 표시하는 레이아웃 구현에 어려움이 있었습니다.
+- **이벤트 일정 중복 구현**
+  <br/> 여러 이벤트(일정)가 동시에 발생할 경우 겹치지 않게 시각적으로 표시하는 레이아웃 구현에 어려움이 있었습니다.
 
-- **모달 UI 구현** : 실제 Google Calendar의 모달과 유사하게 디자인하고, 사용자의 클릭 위치에 따라 모달이 나타나며, 내부 요소들이 적절하게 배치되도록 하는 데 많은 스타일 조정이 필요했습니다. 특히 시간대 입력 필드의 동적 변경 및 세로 배치 구현에서 복잡성이 있었습니다.
+- **모달 UI 구현**
+  <br/>실제 Google Calendar의 모달과 유사하게 디자인하고 사용자의 클릭 위치에 따라 모달이 나타나며, 내부 요소들이 적절하게 배치되도록 하는 데 많은 스타일 조정이 필요했습니다.
 
 ## 5. 성능 체크
 
-웹 페이지의 성능 및 사용자 경험 개선을 위해 **Lighthouse** 도구를 활용하여 주기적으로 성능을 측정하고 분석했습니다.
+### 5.1. Lighthouse 성능 검사
+
+- Performance : 84점
+- Accessibility : 89점
+- Best Practices & SEO : 100점
+- 주요 이슈
+  - `LCP`: 2.5s - 핵심 콘텐츠 지연 렌더링
+  - `TBT`: 160ms - 일부 연산 최적화 필요
+  - `warn - Unable to preventDefault inside passive event listener` : 스크롤 이벤트 리스너 최적화 필요
+
+### 5.2. 리렌더링
+
+- 리렌더링 없음 (React Developer Tools 기준 확인 완료)
 
 ## 6. 추가 개선점
 
 - 모달 UI 추가 개선
 
 - 월간 캘린더 뷰에서 다중 날짜 선택 구현
+
+- 성능 개선
 
 - 애니메이션 추가(페이지 전환, 이벤트 생성/삭제, 모달 열림/닫힘 등)

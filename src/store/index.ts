@@ -1,31 +1,38 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import calendarReducer from './slices/calendarSlice';
 import eventReducer from './slices/eventSlice';
 import layoutReducer from './slices/layoutSlice';
 
-const persistConfig = {
-  key: 'root',
+const calendarPersistConfig = {
+  key: 'calendar',
   storage,
-  whitelist: ['calendar', 'events'],
+  whitelist: ['view'],
 };
 
-const persistedCalendarReducer = persistReducer(persistConfig, calendarReducer);
-const persistedEventReducer = persistReducer(persistConfig, eventReducer);
-const persistedLayoutReducer = persistReducer(persistConfig, layoutReducer);
+const persistedCalendarReducer = persistReducer(calendarPersistConfig, calendarReducer);
 
 export const store = configureStore({
   reducer: {
     calendar: persistedCalendarReducer,
-    events: persistedEventReducer,
-    layout: persistedLayoutReducer,
+    layout: layoutReducer,
+    event: eventReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
 });

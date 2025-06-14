@@ -1,9 +1,10 @@
 import React from 'react';
-import { Inter } from 'next/font/google';
-import type { Metadata } from 'next';
 
-import ReduxProvider from '@/components/providers/ReduxProvider';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
 import RootLayout from '@/components/layout/RootLayout';
+import ReduxProvider from '@/components/providers/ReduxProvider';
 
 import './globals.css';
 

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+
 import { useSelector } from 'react-redux';
 
-import { RootState } from '@/store';
 import MiniCalendar from '@/components/mini-calendar/MiniCalendar';
 import EventFormModal from '@/components/modal/EventFormModal';
+import { RootState } from '@/store';
 
 export default function Sidebar() {
   const { isSidebarOpen } = useSelector((state: RootState) => state.layout);

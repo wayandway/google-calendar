@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import type React from 'react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useEffect, useRef } from 'react';
+
 import { Event } from '@/types/calendar';
 
 interface EventListModalProps {

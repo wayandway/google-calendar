@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import type React from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@/store';
 import { setSelectedDate, setCurrentDate, setView } from '@/store/slices/calendarSlice';

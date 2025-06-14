@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
 import {
   format,
   addDays,
@@ -11,9 +10,11 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import React, { useState } from 'react';
+import type React from 'react';
 
-import { Event } from '@/types/event';
 import { WeekViewProps } from '@/types/calendar';
+import { Event } from '@/types/event';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 4 }, (_, i) => i * 15); // 15분 단위로 4개 (0, 15, 30, 45)

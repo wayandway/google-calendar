@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import MonthView from './MonthView';
 import WeekView from './WeekView';
+
 import EventFormModal from '@/components/modal/EventFormModal';
 import EventViewModal from '@/components/modal/EventViewModal';
-
 import { RootState } from '@/store';
 import {
   setView,

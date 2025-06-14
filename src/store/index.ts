@@ -11,9 +11,9 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+import eventReducer from './slices/eventSlice';
 import calendarReducer from './slices/calendarSlice';
 import layoutReducer from './slices/layoutSlice';
-import eventReducer from './slices/eventSlice';
 
 const calendarPersistConfig = {
   key: 'calendar',

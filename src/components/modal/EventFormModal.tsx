@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import React, { useEffect, useRef } from 'react';
+
 import { useDispatch } from 'react-redux';
+
 import { addEvent } from '@/store/slices/eventSlice';
 import { Event } from '@/types/event';
 

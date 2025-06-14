@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
 import {
   format,
   startOfMonth,
@@ -13,10 +12,12 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import type React from 'react';
+import { useState } from 'react';
 
-import { Event } from '@/types/event';
-import { MonthViewProps } from '@/types/calendar';
 import { EventListModal } from '@/components/modal/EventListModal';
+import { MonthViewProps } from '@/types/calendar';
+import { Event } from '@/types/event';
 
 export default function MonthView({
   currentDate,

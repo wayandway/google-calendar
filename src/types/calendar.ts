@@ -1,4 +1,6 @@
-export type CalendarView = 'month' | 'week';
+import { Event } from './event';
+
+export type CalendarView = 'month' | 'week' | 'day';
 
 export interface CalendarEvent {
   id: string;
@@ -15,30 +17,37 @@ export interface CalendarEvent {
   };
 }
 
-export interface WeekViewProps {
-  currentDate: Date;
-  events: CalendarEvent[];
-  onEventClick: (event: CalendarEvent) => void;
-  onDateClick: (date: Date) => void;
-}
-
-export interface MonthViewProps {
-  currentDate: Date;
-  events: CalendarEvent[];
-  onEventClick: (event: CalendarEvent) => void;
-  onDateClick: (date: Date) => void;
-}
-
-export interface MainCalendarProps {
-  events?: CalendarEvent[];
-  onEventClick?: (event: CalendarEvent) => void;
-  onDateClick?: (date: Date) => void;
-  onEventCreate?: (start: Date, end: Date) => void;
-  defaultView?: CalendarView;
+export interface DragState {
+  isDragging: boolean;
+  startDate: Date | null;
+  endDate: Date | null;
+  startTime?: number | null;
+  endTime?: number | null;
 }
 
 export interface CalendarState {
   currentDate: Date;
   view: CalendarView;
   selectedDate: Date | null;
+}
+
+export interface BaseCalendarProps {
+  events?: Event[];
+  onEventClick?: (event: Event, clickEvent: React.MouseEvent) => void;
+  onDateClick?: (date: Date, event?: React.MouseEvent) => void;
+  onDateRangeSelect?: (start: Date, end: Date) => void;
+  selectedRange?: { start: Date; end: Date } | null;
+}
+
+export interface MainCalendarProps extends BaseCalendarProps {
+  onEventCreate?: (start: Date, end: Date) => void;
+  defaultView?: CalendarView;
+}
+
+export interface MonthViewProps extends BaseCalendarProps {
+  currentDate: Date;
+}
+
+export interface WeekViewProps extends BaseCalendarProps {
+  currentDate: Date;
 }

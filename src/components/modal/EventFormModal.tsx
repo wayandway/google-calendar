@@ -259,7 +259,7 @@ export default function EventFormModal({
                   type="text"
                   value={format(start, 'M월 d일 (eee)', { locale: ko })}
                   readOnly
-                  className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none cursor-pointer text-center bg-gray-100"
                 />
                 {!allDay && (
                   <div className="flex flex-col space-y-2">

@@ -11,8 +11,9 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import calendarReducer from './features/calendarSlice';
-import layoutReducer from './features/layoutSlice';
+import calendarReducer from './slices/calendarSlice';
+import layoutReducer from './slices/layoutSlice';
+import eventReducer from './slices/eventSlice';
 
 const calendarPersistConfig = {
   key: 'calendar',
@@ -26,11 +27,12 @@ export const store = configureStore({
   reducer: {
     calendar: persistedCalendarReducer,
     layout: layoutReducer,
+    event: eventReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
 });

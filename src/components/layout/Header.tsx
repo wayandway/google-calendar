@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import React from 'react';
 
+import { Menu, ChevronLeft } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@/store';
@@ -52,11 +53,11 @@ export default function Header() {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b h-16">
+    <div className="flex items-center justify-between p-4 h-16 bg-[#f8fafd]">
       <div className="flex items-center space-x-4">
         <button
           onClick={handleSidebarToggle}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-full hover:cursor-pointer"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -72,14 +73,14 @@ export default function Header() {
         </div>
         <button
           onClick={handleTodayClick}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-1.5 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:cursor-pointer"
         >
           오늘
         </button>
         <div className="flex items-center space-x-2">
           <button
             onClick={handlePrevMonth}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full hover:cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -92,7 +93,7 @@ export default function Header() {
           </button>
           <button
             onClick={handleNextMonth}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full hover:cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -108,7 +109,7 @@ export default function Header() {
             view === 'month'
               ? 'bg-blue-500 text-white'
               : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
-          }`}
+          } hover:cursor-pointer`}
         >
           월
         </button>
@@ -118,7 +119,7 @@ export default function Header() {
             view === 'week'
               ? 'bg-blue-500 text-white'
               : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
-          }`}
+          } hover:cursor-pointer`}
         >
           주
         </button>

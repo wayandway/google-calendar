@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
+import { Plus } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
 import MiniCalendar from '@/components/mini-calendar/MiniCalendar';
@@ -38,14 +39,19 @@ export default function Sidebar() {
   return (
     <>
       {isSidebarOpen ? (
-        <div className="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-white border-r overflow-y-auto">
+        <div className="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-[#f8fafd] overflow-y-auto">
           <div className="p-4 relative" ref={dropdownRef}>
-            <button
-              onClick={handleCreateClick}
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-            >
-              만들기
-            </button>
+            <div className="flex items-center gap-2 px-4 py-2">
+              <button
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full hover:bg-gray-50 hover:cursor-pointer"
+              >
+                <Plus className="w-5 h-5" />
+                <span>만들기</span>
+              </button>
+            </div>
             {isDropdownOpen && (
               <div className="absolute top-full left-0 w-full mt-1 bg-white border rounded-md shadow-lg z-10">
                 <button

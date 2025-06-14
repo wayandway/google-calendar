@@ -4,14 +4,10 @@ import {
   format,
   startOfMonth,
   endOfMonth,
-  eachDayOfInterval,
   isSameMonth,
   isSameDay,
-  isAfter,
-  isBefore,
   isWithinInterval,
 } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import React, { useState } from 'react';
 
 import { EventListModal } from '@/components/modal/EventListModal';
@@ -26,23 +22,18 @@ export default function MonthView({
   onDateRangeSelect,
   selectedRange,
 }: MonthViewProps) {
-  const [isDragging, setIsDragging] = useState(false);
   const [dragStartDate, setDragStartDate] = useState<Date | null>(null);
   const [dragEndDate, setDragEndDate] = useState<Date | null>(null);
   const [showEventList, setShowEventList] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
 
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
-
   const handleDateClick = (date: Date, e: React.MouseEvent) => {
     // 이벤트 목록 모달이 열려있으면 날짜 클릭 무시
     if (showEventList) {
       return;
     }
-    onDateClick(date, e);
+    onDateClick?.(date, e);
   };
 
   const handleMouseDown = (date: Date, event: React.MouseEvent) => {
@@ -66,7 +57,7 @@ export default function MonthView({
     if (dragStartDate && dragEndDate) {
       const start = dragStartDate < dragEndDate ? dragStartDate : dragEndDate;
       const end = dragStartDate < dragEndDate ? dragEndDate : dragStartDate;
-      onDateRangeSelect(start, end);
+      onDateRangeSelect?.(start, end);
     }
     // 드래그 상태 초기화
     setDragStartDate(null);
@@ -89,14 +80,10 @@ export default function MonthView({
     return false;
   };
 
-  const isSelected = (date: Date) => {
-    return selectedDate ? isSameDay(date, selectedDate) : false;
-  };
-
   const handleMoreClick = (date: Date, e: React.MouseEvent) => {
     e.stopPropagation();
-    e.preventDefault(); // 이벤트 전파 중단
-    const target = e.currentTarget as HTMLElement;
+    e.preventDefault();
+    const target = e.currentTarget as globalThis.HTMLElement;
     const rect = target.getBoundingClientRect();
     setSelectedDate(date);
     setModalPosition({ x: rect.left, y: rect.top });
@@ -111,9 +98,9 @@ export default function MonthView({
   const handleEventListEventClick = (
     event: Event,
     clickEvent: React.MouseEvent,
-    position: { x: number; y: number },
+    position?: { x: number; y: number },
   ) => {
-    onEventClick(event, clickEvent, position);
+    onEventClick?.(event, clickEvent, position);
   };
 
   const renderCalendarDays = () => {
@@ -160,8 +147,8 @@ export default function MonthView({
           onMouseDown={(e) => {
             // 이벤트 영역을 클릭한 경우 드래그 시작하지 않음
             if (
-              (e.target as HTMLElement).closest('.event-item') ||
-              (e.target as HTMLElement).closest('.more-events')
+              (e.target as globalThis.HTMLElement).closest('.event-item') ||
+              (e.target as globalThis.HTMLElement).closest('.more-events')
             ) {
               e.stopPropagation();
               return;
@@ -173,8 +160,8 @@ export default function MonthView({
           onClick={(e) => {
             // 이벤트 영역이나 더보기를 클릭한 경우 날짜 클릭 이벤트 발생하지 않음
             if (
-              (e.target as HTMLElement).closest('.event-item') ||
-              (e.target as HTMLElement).closest('.more-events')
+              (e.target as globalThis.HTMLElement).closest('.event-item') ||
+              (e.target as globalThis.HTMLElement).closest('.more-events')
             ) {
               e.stopPropagation();
               return;
@@ -197,7 +184,6 @@ export default function MonthView({
               const eventEnd = new Date(event.end);
               const isMultiDay = !isSameDay(eventStart, eventEnd);
               const isFirstDay = isSameDay(eventStart, currentDate);
-              const isLastDay = isSameDay(eventEnd, currentDate);
 
               return (
                 <div
@@ -211,7 +197,7 @@ export default function MonthView({
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEventClick(event, e);
+                    onEventClick?.(event, e);
                   }}
                 >
                   {isFirstDay && event.title}

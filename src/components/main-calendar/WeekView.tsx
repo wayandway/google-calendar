@@ -1,19 +1,10 @@
 'use client';
 
-import {
-  format,
-  addDays,
-  startOfWeek,
-  endOfWeek,
-  isSameDay,
-  addMinutes,
-  isWithinInterval,
-} from 'date-fns';
+import { format, addDays, startOfWeek, isSameDay, isWithinInterval } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import React, { useState } from 'react';
 
 import { WeekViewProps } from '@/types/calendar';
-import { Event } from '@/types/event';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 4 }, (_, i) => i * 15); // 15분 단위로 4개 (0, 15, 30, 45)
@@ -22,22 +13,14 @@ const WeekView: React.FC<WeekViewProps> = ({
   currentDate,
   events = [],
   onEventClick,
-  onDateClick,
   onDateRangeSelect,
-  selectedRange,
 }: WeekViewProps) => {
-  const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<Date | null>(null);
   const [dragEnd, setDragEnd] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<{
-    date: Date;
-    hour: number;
-    minute: number;
-  } | null>(null);
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const startDate = startOfWeek(currentDate, { locale: ko });
-  const endDate = endOfWeek(currentDate, { locale: ko });
   const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
 
   const handleDateClick = (date: Date, hour: number, minute: number, event?: React.MouseEvent) => {
@@ -175,12 +158,13 @@ const WeekView: React.FC<WeekViewProps> = ({
                 {events
                   .filter((event) => {
                     const eventStart = new Date(event.start);
-                    const eventEnd = new Date(event.end);
                     const currentTime = new Date(date);
                     currentTime.setHours(hour, 0, 0, 0);
 
                     return (
-                      !event.allDay && isSameDay(eventStart, date) && eventStart.getHours() === hour
+                      !event.isAllDay &&
+                      isSameDay(eventStart, date) &&
+                      eventStart.getHours() === hour
                     );
                   })
                   .map((event) => {
@@ -240,7 +224,7 @@ const WeekView: React.FC<WeekViewProps> = ({
           <div className="border-r p-2 text-center font-semibold">종일</div>
           <div className="col-span-7 relative">
             {events
-              .filter((event) => event.allDay)
+              .filter((event) => event.isAllDay)
               .map((event) => {
                 const eventStart = new Date(event.start);
                 const eventEnd = new Date(event.end);

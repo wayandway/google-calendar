@@ -10,22 +10,10 @@ import WeekView from './WeekView';
 import EventFormModal from '@/components/modal/EventFormModal';
 import EventViewModal from '@/components/modal/EventViewModal';
 import { RootState } from '@/store';
-import {
-  setView,
-  setSelectedDate,
-  moveToPrevMonth,
-  moveToNextMonth,
-  moveToToday,
-} from '@/store/slices/calendarSlice';
-import { CalendarView, MainCalendarProps } from '@/types/calendar';
+import { setSelectedDate, moveToPrevMonth, moveToNextMonth } from '@/store/slices/calendarSlice';
 import { Event } from '@/types/event';
 
-export default function MainCalendar({
-  onEventClick = () => {},
-  onDateClick,
-  onDateRangeSelect,
-  defaultView = 'month',
-}: MainCalendarProps) {
+export default function MainCalendar() {
   const dispatch = useDispatch();
   const { currentDate, view } = useSelector((state: RootState) => state.calendar);
   const events = useSelector((state: RootState) => state.event.events);
@@ -60,10 +48,10 @@ export default function MainCalendar({
     setSelectedDateRange({ start, end });
 
     // 모달 위치 계산
-    const calendarElement = document.querySelector('.calendar-container');
+    const calendarElement = globalThis.document.querySelector('.calendar-container');
     if (calendarElement) {
       // 선택한 날짜/시간 셀의 위치 계산
-      const cellElement = document.querySelector(
+      const cellElement = globalThis.document.querySelector(
         view === 'month'
           ? `.day-cell[data-date="${start.toISOString().split('T')[0]}"]`
           : `.time-cell[data-time="${start.getHours()}:${start.getMinutes()}"]`,

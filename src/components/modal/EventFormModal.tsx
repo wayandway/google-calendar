@@ -190,7 +190,7 @@ export default function EventFormModal({
     >
       <div
         ref={modalRef}
-        className="absolute bg-white rounded-lg shadow-lg p-4 w-[26rem] h-[34rem] flex flex-col justify-between"
+        className="absolute bg-white rounded-lg shadow-lg p-4 w-[26rem] h-fit flex flex-col justify-between"
         style={{
           left: position.x,
           top: position.y,
@@ -368,7 +368,14 @@ export default function EventFormModal({
             </div>
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-6 space-x-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              취소
+            </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"

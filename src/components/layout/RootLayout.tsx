@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import type React from 'react';
 
 import { useSelector } from 'react-redux';
 

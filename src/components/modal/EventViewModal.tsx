@@ -1,13 +1,11 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import type React from 'react';
-import { useEffect, useRef } from 'react';
 
-import { useDispatch } from 'react-redux';
-
-import { deleteEvent } from '@/store/slices/eventSlice';
+import { deleteEvent } from '@/store/slices/calendarSlice';
 import { Event } from '@/types/event';
 
 interface EventViewModalProps {
@@ -17,8 +15,8 @@ interface EventViewModalProps {
 }
 
 export default function EventViewModal({ event, onClose, position }: EventViewModalProps) {
-  const dispatch = useDispatch();
   const modalRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,18 +25,9 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
 
@@ -49,91 +38,37 @@ export default function EventViewModal({ event, onClose, position }: EventViewMo
 
   return (
     <div
-      className="fixed inset-0 z-50"
-      style={{
-        pointerEvents: 'auto',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
+      ref={modalRef}
+      className="fixed bg-white rounded-lg shadow-lg p-4 w-96"
+      style={{ top: position.y, left: position.x }}
     >
-      <div
-        ref={modalRef}
-        className="absolute bg-white rounded-lg shadow-lg p-4 w-80"
-        style={{
-          left: position.x,
-          top: position.y,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">{event.title}</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-              ✕
-            </button>
-          </div>
-
-          {event.description && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">설명</label>
-              <p className="mt-1 text-sm text-gray-600 whitespace-pre-wrap">{event.description}</p>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">시작</label>
-            <p className="mt-1 text-sm text-gray-600">
-              {format(
-                new Date(event.start),
-                event.allDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
-                {
-                  locale: ko,
-                },
-              )}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">종료</label>
-            <p className="mt-1 text-sm text-gray-600">
-              {format(
-                new Date(event.end),
-                event.allDay ? 'yyyy년 MM월 dd일' : 'yyyy년 MM월 dd일 HH:mm',
-                {
-                  locale: ko,
-                },
-              )}
-            </p>
-          </div>
-
-          {event.allDay && (
-            <div>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                종일
-              </span>
-            </div>
-          )}
-
-          <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              삭제
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              닫기
-            </button>
-          </div>
+      <div className="mb-4">
+        <div
+          className="w-2 h-2 rounded-full mb-2"
+          style={{ backgroundColor: event.color || '#3b82f6' }}
+        />
+        <h2 className="text-lg font-semibold">{event.title}</h2>
+        <div className="text-sm text-gray-500">
+          {format(new Date(event.start), 'yyyy년 MM월 dd일 HH:mm', { locale: ko })} -{' '}
+          {format(new Date(event.end), 'HH:mm', { locale: ko })}
         </div>
+      </div>
+      {event.description && (
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-1">설명</h3>
+          <p className="text-sm text-gray-600">{event.description}</p>
+        </div>
+      )}
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={handleDelete}
+          className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-md"
+        >
+          삭제
+        </button>
+        <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
+          닫기
+        </button>
       </div>
     </div>
   );

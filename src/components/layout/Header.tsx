@@ -5,6 +5,7 @@ import { ko } from 'date-fns/locale';
 import React from 'react';
 
 import { Menu, ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@/store';
@@ -69,7 +70,8 @@ export default function Header() {
           </svg>
         </button>
         <div className="flex items-center space-x-2">
-          <span className="text-2xl font-normal text-gray-600">Calendar</span>
+          <Image src="/logo.png" alt="구글 캘린더 로고" width={40} height={40} />
+          <span className="text-2xl font-normal text-gray-600 cursor-default">Calendar</span>
         </div>
         <button
           onClick={handleTodayClick}

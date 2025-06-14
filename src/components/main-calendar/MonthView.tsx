@@ -12,8 +12,7 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import type React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { EventListModal } from '@/components/modal/EventListModal';
 import { MonthViewProps } from '@/types/calendar';

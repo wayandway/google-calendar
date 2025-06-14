@@ -10,6 +10,11 @@ export interface Event {
   end: string; // ISO string
   allDay?: boolean;
   color?: string;
+  zIndex?: number;
+  type?: EventType;
+  isAllDay?: boolean;
+  repeat?: EventRepeatType;
+  author?: string;
 }
 
 export interface EventFormData {
@@ -21,11 +26,4 @@ export interface EventFormData {
   repeat: EventRepeatType;
   author: string;
   color: string;
-}
-
-export interface Event extends Omit<EventFormData, 'start' | 'end'> {
-  id: string;
-  zIndex: number;
-  start: string;
-  end: string;
 }

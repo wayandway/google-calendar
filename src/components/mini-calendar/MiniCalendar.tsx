@@ -25,7 +25,7 @@ import {
   moveToNextMonth,
   moveToToday,
   setView,
-} from '@/store/features/calendarSlice';
+} from '@/store/slices/calendarSlice';
 
 export default function MiniCalendar() {
   const dispatch = useDispatch();

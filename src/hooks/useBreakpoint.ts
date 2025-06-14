@@ -2,39 +2,47 @@
 
 import { useState, useEffect } from 'react';
 
-const breakpoints = {
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  '2xl': 1536,
+import type { Breakpoints } from '../types/styles';
+
+const breakpoints: Breakpoints = {
+  mobile: '320px',
+  tablet: '768px',
+  laptop: '1024px',
+  desktop: '1280px',
 };
 
-type Breakpoint = keyof typeof breakpoints;
-
-export default function useBreakpoint() {
-  const [breakpoint, setBreakpoint] = useState<Breakpoint>('sm');
+export const useBreakpoint = () => {
+  const [breakpoint, setBreakpoint] = useState('');
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width >= breakpoints['2xl']) {
-        setBreakpoint('2xl');
-      } else if (width >= breakpoints.xl) {
-        setBreakpoint('xl');
-      } else if (width >= breakpoints.lg) {
-        setBreakpoint('lg');
-      } else if (width >= breakpoints.md) {
-        setBreakpoint('md');
-      } else {
-        setBreakpoint('sm');
-      }
-    };
+    function handleResize() {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
 
-    handleResize();
+      const width = window.innerWidth;
+
+      if (width < parseInt(breakpoints.tablet)) {
+        setBreakpoint('mobile');
+      } else if (width < parseInt(breakpoints.laptop)) {
+        setBreakpoint('tablet');
+      } else if (width < parseInt(breakpoints.desktop)) {
+        setBreakpoint('laptop');
+      } else {
+        setBreakpoint('desktop');
+      }
+    }
+
     window.addEventListener('resize', handleResize);
+    handleResize();
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return breakpoint;
-}
+  return { breakpoint, dimensions };
+};
